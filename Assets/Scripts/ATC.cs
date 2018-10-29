@@ -63,10 +63,15 @@ public class ATC : MonoBehaviour
         planes.Add(plane);
     }
 
-    public Vector3[] GetTaxiwayToGate(Vector3 inputPos, Gate gate)
+    public Vector3[] GetTaxiwayToGate(Vector3 inputPos, Vector3 inputFrw, Gate gate)
     {
-        Vector3 pos = transform.position;
-        int index = Mathf.FloorToInt(pos.x / runway.taxiwayDistance) - 3;
+        int index;
+        if (inputFrw.x < 0)
+            index = Mathf.FloorToInt(inputPos.x / runway.taxiwayDistance);
+        else
+            index = Mathf.CeilToInt(inputPos.x / runway.taxiwayDistance);
+
+        Debug.Log(index);
 
         float taxix = index * runway.taxiwayDistance;
 
