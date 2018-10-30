@@ -523,11 +523,12 @@ MonoBehaviour:
   flareMaximumAngle: -7
   noseDropTime: 5
   validationDistance: 10
-  speedUp: 10
-  startRotateAtSpeed: 30
+  speedUp: 2
+  startRotateAtSpeed: 40
+  rotateAngleRate: 5
   rotateAngle: -7
-  takeoffSpeed: 35
-  takeoffMaxAngle: -10
+  takeoffSpeed: 55
+  takeoffMaxAngle: -15
   takeOffAngleRate: 5
   gate: {fileID: 0}
   flareAngleCurve:

@@ -64,10 +64,23 @@ public class ATC : MonoBehaviour
         Plane plane = CreatePlane();
         plane.state = Plane.State.TakingOff;
 
-        plane.transform.position = Vector3.zero;
+        plane.runway = runway;
+
+        plane.transform.position = runway.transform.position;
         plane.transform.forward = -Vector3.right;
 
         runway.inUse = true;
+    }
+
+    void SpawnDepartingPlane()
+    {
+        Gate gate = GetFreeGate();
+
+        Plane plane = CreatePlane();
+        plane.state = Plane.State.TaxiingToRunway;
+
+        plane.transform.position = gate.transform.position;
+        plane.transform.rotation = gate.transform.rotation;
     }
 
     Plane CreatePlane()

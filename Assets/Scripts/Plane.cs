@@ -42,6 +42,7 @@ public class Plane : MonoBehaviour
     [Header("TakeOff")]
     public float speedUp = 1;
     public float startRotateAtSpeed = 30;
+    public float rotateAngleRate = 5;
     public float rotateAngle = -7;
     public float takeoffSpeed = 35;
     public float takeoffMaxAngle = -10;
@@ -120,7 +121,8 @@ public class Plane : MonoBehaviour
 
             if (!onGround)
             {
-                zAdd = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
+                float zAddNoise = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
+                zAdd = Mathf.Lerp(0, zAddNoise, alt * 0.2f);
 
                 speed = landingSpeed;
 
@@ -174,6 +176,9 @@ public class Plane : MonoBehaviour
         }
         else if (state == State.TakingOff)
         {
+            // --------
+            // TAKE OFF
+            // --------
 
             if (!runway)
             {
@@ -181,12 +186,11 @@ public class Plane : MonoBehaviour
                 return;
             }
 
-            //float alt = Time.deltaTime * landingSpeed;
-
-            Vector3 veloDir = -Vector3.right;
+            Vector3 veloDir = Quaternion.Euler(0, 0, curAngle) * -Vector3.right;
             float flareAltMult = 1.0f / flareBeginAlt;
 
-            float zAdd = 0;
+            float zAddNoise = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
+            float zAdd = Mathf.Lerp(0, zAddNoise, alt * 0.2f);
 
             if (onGround)
             {
@@ -199,19 +203,26 @@ public class Plane : MonoBehaviour
                 }*/
             }
 
-            if (speed > takeoffSpeed)
+            float absAngle = Mathf.Abs(curAngle);
+
+            if (speed > takeoffSpeed && absAngle < Mathf.Abs(takeoffMaxAngle))
             {
                 //if (curAngle < takeoffMaxAngle)
-                    curAngle -= Time.deltaTime * takeOffAngleRate;
+                curAngle -= Time.deltaTime * takeOffAngleRate;
 
                 veloDir = Quaternion.Euler(0, 0, curAngle) * -Vector3.right;
             }
 
+            if (speed > startRotateAtSpeed && Mathf.Abs(flare) < Mathf.Abs(flareMaximumAngle))
+            {
+                flare -= Time.deltaTime * rotateAngleRate;
+            }
 
-            if (takeoffMaxAngle < -curAngle && onGround)
+            if (onGround && speed > takeoffSpeed)
             {
                 onGround = false;
-                Debug.Log("Plane taking off!");
+                runway.inUse = false;
+                //runway = null;
             }
 
             Vector3 frw = Quaternion.Euler(0, 0, flare) * veloDir;
@@ -220,13 +231,13 @@ public class Plane : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(frw, up);
             transform.position += veloDir * speed * Time.deltaTime;
 
-            //Vector3 p = transform.position;
-            //p.z = runway.transform.position.z + zAdd * randomXMult;
-            //transform.position = p;
+            Vector3 p = transform.position;
+            p.z = runway.transform.position.z + zAdd * randomXMult;
+            transform.position = p;
 
             if (alt > 500)
             {
-                Destroy(gameObject);
+                //Destroy(gameObject);
                 return;
             }
         }
