@@ -560,3 +560,8 @@ MonoBehaviour:
   randomFreq: 0.05
   randomBankMult: -1
   turnSpeed: 100
+  steerPID:
+    pFactor: 2
+    iFactor: 0.3
+    dFactor: 0.12
+  maxAngVelo: 200

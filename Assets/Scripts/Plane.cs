@@ -59,13 +59,23 @@ public class Plane : MonoBehaviour
                 break;
             case State.TakingOff:
                 onGround = true;
+                alreadyUnusedRunway = false;
                 break;
             case State.TaxiingToGate:
-                //runway.inUse = false;
+                currentTarget = 0;
+                Debug.Log("WTF!");
+                transform.rotation = Random.rotation;// runway.transform.rotation;
                 break;
             case State.AtGate:
+
                 break;
             case State.TaxiingToRunway:
+                currentTarget = 0;
+                Debug.Log("Got points to runway");
+                isPushback = true;
+                gate.plane = null;
+                taxiwayPoints = ATC.e.GetTaxiwayToRunway(gate);
+
                 break;
             default:
                 break;
@@ -91,10 +101,18 @@ public class Plane : MonoBehaviour
     public float randomFreq = 0.01f;
     public float randomBankMult = 10;
 
+    bool alreadyUnusedRunway;
+
     Vector3 LandingFrw()
     {
         return Quaternion.Euler(0, 0, landingAngle) * -Vector3.right;
     }
+
+    bool isPushback;
+
+    float steerRate;
+    float steerTarget;
+    float steerAngle;
 
     void Update()
     {
@@ -170,6 +188,8 @@ public class Plane : MonoBehaviour
 
                 // Find a closest taxiway
                 taxiwayPoints = ATC.e.GetTaxiwayToGate(transform.position, frw, gate);
+                transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+                transform.rotation = runway.transform.rotation;
 
                 state = State.TaxiingToGate;
             }
@@ -182,6 +202,7 @@ public class Plane : MonoBehaviour
 
             if (!runway)
             {
+                Debug.LogError("Attempting to depart but no runway!");
                 Destroy(gameObject);
                 return;
             }
@@ -195,12 +216,7 @@ public class Plane : MonoBehaviour
             if (onGround)
             {
                 speed += Time.deltaTime * speedUp;
-
-                /*
-                if (speed > startRotateAtSpeed && flare > rotateAngle)
-                {
-                    flare -= Time.deltaTime * startRotateAtSpeed;
-                }*/
+                //Debug.Log("Speedingup");
             }
 
             float absAngle = Mathf.Abs(curAngle);
@@ -218,11 +234,11 @@ public class Plane : MonoBehaviour
                 flare -= Time.deltaTime * rotateAngleRate;
             }
 
-            if (onGround && speed > takeoffSpeed)
+            if (onGround && speed > takeoffSpeed && !alreadyUnusedRunway)
             {
                 onGround = false;
                 runway.inUse = false;
-                //runway = null;
+                alreadyUnusedRunway = true;
             }
 
             Vector3 frw = Quaternion.Euler(0, 0, flare) * veloDir;
@@ -241,16 +257,144 @@ public class Plane : MonoBehaviour
                 return;
             }
         }
-        else if (state == State.TaxiingToGate || state == State.TaxiingToRunway)
+        else if (state == State.TaxiingToGate)
         {
-
-            // follow path
             transform.position += transform.forward * speed * Time.deltaTime;
 
-            Vector3 tgt = taxiwayPoints[currentTarget];
-            GetSteer(tgt);
+            if (taxiwayPoints == null)
+            {
+                speed -= Time.deltaTime * 1;
+                speed = Mathf.Clamp(speed, 0, 5);
 
-            // free runway
+                if (speed == 0)
+                    state = State.AtGate;
+            }
+            else
+            {
+                // follow path
+                //transform.position += transform.forward * speed * Time.deltaTime;
+
+                // follow path
+                Vector3 tgt = taxiwayPoints[currentTarget];
+
+                Vector3 dir = (taxiwayPoints[currentTarget] - transform.position).normalized;
+
+                if (currentTarget < taxiwayPoints.Length - 1)
+                    SteerTowards(dir, 30);
+                else
+                    SteerTowards(gate.transform.forward, 10);
+
+                float distToGate = Vector3.Distance(gate.transform.position, transform.position);
+
+                speed = Mathf.Lerp(1, 5, distToGate * 0.01f);
+
+                // validate node
+                if (Vector3.Distance(transform.position, tgt) < validationDistance)
+                {
+                    currentTarget++;
+                    if (currentTarget >= taxiwayPoints.Length)
+                    {
+                        taxiwayPoints = null;
+                    }
+                }
+
+                // free runway
+                if (runway && runway.inUse && !alreadyUnusedRunway)
+                {
+                    if (transform.position.z < runway.transform.position.z + runway.taxiwayThreshold)
+                    {
+                        Debug.Log("Freeing runway", gameObject);
+                        runway.inUse = false;
+                        alreadyUnusedRunway = true;
+                        //runway = null;
+                    }
+                }
+            }
+
+
+        }
+        else if (state == State.TaxiingToRunway)
+        {
+            // pushback
+            if (isPushback)
+            {
+                bool beforeTurn = transform.position.z < ATC.e.gateTaxiwayZ - 10;
+
+                if (beforeTurn)
+                {
+                    speed += -Time.deltaTime;
+                    speed = Mathf.Clamp(speed, -5, 0);
+                }
+                else
+                {
+
+                    float currentAngle = Vector3.SignedAngle(transform.forward, -runway.transform.forward, Vector3.up);
+                    //Debug.Log(currentAngle);
+
+                    SteerTowards(Vector3.right, 30);
+
+                    if (currentAngle < 0)
+                    {
+                        speed += -Time.deltaTime;
+                        speed = Mathf.Clamp(speed, -5, 0);
+                    }
+                    else
+                    {
+                        isPushback = false;
+
+                    }
+                }
+            }
+            else
+            {
+                // Wait for runway to be free
+                if (transform.position.z > runway.GetThreshold() - 20 && runway.inUse)
+                {
+                    speed -= Time.deltaTime;
+                    speed = Mathf.Clamp(speed, 0, 5);
+                }
+                else
+                {
+                    speed += Time.deltaTime;
+                    speed = Mathf.Clamp(speed, -5, 5);
+                }
+
+                // follow path
+                Vector3 tgt = taxiwayPoints[currentTarget];
+                //GetSteer(tgt);
+
+                Vector3 dir = (taxiwayPoints[currentTarget] - transform.position).normalized;
+                SteerTowards(dir, 30);
+
+
+
+                // validate node
+                if (Vector3.Distance(transform.position, tgt) < validationDistance)
+                {
+                    currentTarget++;
+                    if (currentTarget >= taxiwayPoints.Length)
+                    {
+                        taxiwayPoints = null;
+                        state = State.TakingOff;
+                        onGround = true;
+                    }
+                }
+            }
+
+            transform.position += transform.forward * speed * Time.deltaTime;
+
+            /*
+            float steerSign = Mathf.Sign(steerAngle - steerTarget);
+            steerRate += steerSign * Time.deltaTime;
+            steerRate = Mathf.Clamp(steerRate, -5, 5);
+            steerAngle = steerRate;
+            transform.forward = Quaternion.Euler(0, steerAngle, 0) * transform.forward;
+            */
+
+            //steerTarget = steerRate;
+
+            // occupy runway
+            /*
             if (runway && runway.inUse)
             {
                 if (transform.position.z < runway.transform.position.z + runway.taxiwayThreshold)
@@ -259,19 +403,13 @@ public class Plane : MonoBehaviour
                     runway.inUse = false;
                     runway = null;
                 }
-            }
-
-            // validate node
-            if (Vector3.Distance(transform.position, tgt) < validationDistance)
-            {
-                currentTarget++;
-                if (currentTarget >= taxiwayPoints.Length)
-                {
-                    taxiwayPoints = null;
-                    state = State.AtGate;
-                }
-            }
+            }*/
         }
+        else if (state == State.AtGate)
+        {
+
+        }
+
 
         //progress += Time.deltaTime * progressSpeed * speedCurve.Evaluate(progress);
 
@@ -288,6 +426,24 @@ public class Plane : MonoBehaviour
         float turn = steerVector.x / steerVector.magnitude * Time.deltaTime;
 
         transform.rotation *= Quaternion.AngleAxis(turn * turnSpeed, Vector3.up);
+    }
+
+    public PID steerPID;
+    float turnVelo;
+    public float maxAngVelo = 200;
+
+    void SteerTowards(Vector3 dir, float maxSteer)
+    {
+        float angle = Vector3.SignedAngle(transform.forward, dir, Vector3.up);
+        angle = Mathf.Clamp(angle, -maxSteer, maxSteer);
+        //Debug.Log(angle);
+
+        steerAngle = steerPID.Update(angle, turnVelo, Time.deltaTime);
+
+        turnVelo += steerAngle * Time.deltaTime;
+        turnVelo = Mathf.Clamp(turnVelo, -maxAngVelo, maxAngVelo);
+
+        transform.Rotate(new Vector3(0, turnVelo * Time.deltaTime, 0));
     }
 
     private void OnDrawGizmos()

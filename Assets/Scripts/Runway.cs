@@ -10,6 +10,16 @@ public class Runway : MonoBehaviour
 
     public bool inUse;
 
+    public float GetTaxiwayZ()
+    {
+        return transform.position.z + taxiwayDistance;
+    }
+
+    public float GetThreshold()
+    {
+        return transform.position.z + taxiwayThreshold;
+    }
+
     void Start()
     {
 
