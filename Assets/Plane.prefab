@@ -512,120 +512,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59fd0a2064d92e5438e281d56c53f8ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startAlt: 30
-  landingAngle: 5
+  startAlt: 200
+  landingAngle: 10
   landingSpeed: 30
-  landingSlope:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 2
-      time: 0
-      value: 1
-      inSlope: -2.0557156
-      outSlope: -2.0557156
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.27681965
-      value: 0.42601758
-      inSlope: -1.8844008
-      outSlope: -1.8844008
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.4311955
-      value: 0.17289647
-      inSlope: -1.2373348
-      outSlope: -1.2373348
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.8008503
-      value: -0.0000034887344
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  landingLength: 200
-  progressSpeed: 0.1
-  heightMult: 100
-  takeoffSlope:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  speedCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 2
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.6
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 1
-      value: 0.5
-      inSlope: -3.368891
-      outSlope: -3.368891
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  rotationCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 2
-      time: 0.0016525167
-      value: -0.4021573
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.20460343
-      value: -0.35918212
-      inSlope: 0.33856577
-      outSlope: 0.33856577
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.5130055
-      value: 0.10389426
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.78087944
-      value: 0.052495085
-      inSlope: -0.28997198
-      outSlope: -0.28997198
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
   state: 0
   runway: {fileID: 0}
-  flareBeginAlt: 10
-  flareMaximumAngle: -10
+  runwayTaxiSpeed: 5
+  landingAoA: -3
+  flareBeginAlt: 20
+  flareMaximumAngle: -7
   noseDropTime: 5
   validationDistance: 10
+  speedUp: 10
+  startRotateAtSpeed: 30
+  rotateAngle: -7
+  takeoffSpeed: 35
+  takeoffMaxAngle: -10
+  takeOffAngleRate: 5
   gate: {fileID: 0}
   flareAngleCurve:
     serializedVersion: 2
@@ -652,4 +555,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 0
   flareAngleHeightMult: 0.2
+  randomXMult: 10
+  randomFreq: 0.05
+  randomBankMult: -1
   turnSpeed: 100

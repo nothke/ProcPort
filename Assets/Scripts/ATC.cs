@@ -33,7 +33,7 @@ public class ATC : MonoBehaviour
 
     void Start()
     {
-        SpawnLandingPlane();
+        SpawnTakingOffPlane();
     }
 
     void Update()
@@ -50,17 +50,35 @@ public class ATC : MonoBehaviour
         Gate gate = GetFreeGate();
         if (gate == null) return;
 
-        GameObject planeGO = Instantiate(planePrefab);
-        Plane plane = planeGO.GetComponent<Plane>();
+        Plane plane = CreatePlane();
 
-        plane.runway = runway;
         plane.state = Plane.State.Landing;
         plane.gate = gate;
 
         gate.plane = plane;
         runway.inUse = true;
+    }
 
+    void SpawnTakingOffPlane()
+    {
+        Plane plane = CreatePlane();
+        plane.state = Plane.State.TakingOff;
+
+        plane.transform.position = Vector3.zero;
+        plane.transform.forward = -Vector3.right;
+
+        runway.inUse = true;
+    }
+
+    Plane CreatePlane()
+    {
+        GameObject planeGO = Instantiate(planePrefab);
+        Plane plane = planeGO.GetComponent<Plane>();
+
+        plane.runway = runway;
         planes.Add(plane);
+
+        return plane;
     }
 
     public Vector3[] GetTaxiwayToGate(Vector3 inputPos, Vector3 inputFrw, Gate gate)

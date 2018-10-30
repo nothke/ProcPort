@@ -8,13 +8,9 @@ public class Plane : MonoBehaviour
     public float landingAngle = 3;
     public float landingSpeed = 10;
 
-    public AnimationCurve landingSlope;
-    public float landingLength;
-    public float progressSpeed;
-    public float heightMult = 100;
-    public AnimationCurve takeoffSlope;
-    public AnimationCurve speedCurve;
-    public AnimationCurve rotationCurve;
+    //public float landingLength;
+    //public float progressSpeed;
+    //public float heightMult = 100;
 
     void Start()
     {
@@ -35,12 +31,21 @@ public class Plane : MonoBehaviour
 
     public float runwayTaxiSpeed = 5;
 
+    [Header("Landing")]
     public float landingAoA = 5;
     public float flareBeginAlt = 10;
     public float flareMaximumAngle;
     public float noseDropTime = 5;
     float speed = 0;
     public float validationDistance = 1;
+
+    [Header("TakeOff")]
+    public float speedUp = 1;
+    public float startRotateAtSpeed = 30;
+    public float rotateAngle = -7;
+    public float takeoffSpeed = 35;
+    public float takeoffMaxAngle = -10;
+    public float takeOffAngleRate = 5;
 
     void StateChange()
     {
@@ -52,6 +57,7 @@ public class Plane : MonoBehaviour
                 transform.position = runway.transform.position + new Vector3(x, startAlt, 0);
                 break;
             case State.TakingOff:
+                onGround = true;
                 break;
             case State.TaxiingToGate:
                 //runway.inUse = false;
@@ -72,10 +78,12 @@ public class Plane : MonoBehaviour
     public AnimationCurve flareAngleCurve;
     public float flareAngleHeightMult = 0.2f;
     float touchdownTime;
-    bool touchedDown;
+    bool onGround;
 
     float flare;
     float flareSign;
+
+    float curAngle = 0;
 
     [Header("Random")]
     public float randomXMult = 5;
@@ -93,26 +101,24 @@ public class Plane : MonoBehaviour
         if (state != lastState)
             StateChange();
 
+        float alt = transform.position.y;
+
         // UPDATE
         if (state == State.Landing)
         {
+
             if (!runway)
             {
-                state = State.AtGate;
                 Destroy(gameObject);
                 return;
             }
-
-            //float alt = Time.deltaTime * landingSpeed;
-
-            float alt = transform.position.y;
 
             Vector3 veloDir = -Vector3.right;
             float flareAltMult = 1.0f / flareBeginAlt;
 
             float zAdd = 0;
 
-            if (!touchedDown)
+            if (!onGround)
             {
                 zAdd = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
 
@@ -137,19 +143,16 @@ public class Plane : MonoBehaviour
                 }
             }
 
-            if (alt < 0 && !touchedDown)
+            if (alt < 0 && !onGround)
             {
                 Vector3 v = transform.position;
                 v.y = 0;
                 transform.position = v;
                 veloDir = -Vector3.right;
                 flareSign = Mathf.Sign(flareMaximumAngle);
-                touchedDown = true;
+                onGround = true;
                 Debug.Log("They touch Martin!");
             }
-
-            //float flareTime += Time.deltaTime;
-            //float flare = flareAngleCurve.Evaluate(alt * flareAngleHeightMult);
             Vector3 frw = Quaternion.Euler(0, 0, flare) * veloDir;
 
             Vector3 up = new Vector3(0, 1, zAdd * randomBankMult).normalized;
@@ -158,7 +161,7 @@ public class Plane : MonoBehaviour
             Vector3 p = transform.position;
             p.z = runway.transform.position.z + zAdd * randomXMult;
             transform.position = p;
-            if (touchedDown && speed <= runwayTaxiSpeed)
+            if (onGround && speed <= runwayTaxiSpeed)
             {
                 // END
                 speed = runwayTaxiSpeed;
@@ -168,38 +171,68 @@ public class Plane : MonoBehaviour
 
                 state = State.TaxiingToGate;
             }
-
-            /*
-            float alt = landingSlope.Evaluate(progress) * heightMult;
-            */
-            /*
-            transform.position = runway.transform.position +
-                new Vector3(
-                -progress * landingLength,
-                alt,
-                0);*/
-
-            //Vector3 frw = runway.transform.forward + Vector3.up * rotationCurve.Evaluate(progress);
-
-
-            /*
-            if (progress > 1)
-            {
-                speed = landingLength * progressSpeed * Time.deltaTime * speedCurve.Evaluate(1);
-
-                // orient to runway
-                transform.forward = runway.transform.forward;
-
-                // Find a closest taxiway
-                //Vector3 pos = transform.position;
-                taxiwayPoints = ATC.e.GetTaxiwayToGate(pos, gate);
-
-                state = State.TaxiingToGate;
-            }*/
         }
-
-        if (state == State.TaxiingToGate)
+        else if (state == State.TakingOff)
         {
+
+            if (!runway)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            //float alt = Time.deltaTime * landingSpeed;
+
+            Vector3 veloDir = -Vector3.right;
+            float flareAltMult = 1.0f / flareBeginAlt;
+
+            float zAdd = 0;
+
+            if (onGround)
+            {
+                speed += Time.deltaTime * speedUp;
+
+                /*
+                if (speed > startRotateAtSpeed && flare > rotateAngle)
+                {
+                    flare -= Time.deltaTime * startRotateAtSpeed;
+                }*/
+            }
+
+            if (speed > takeoffSpeed)
+            {
+                //if (curAngle < takeoffMaxAngle)
+                    curAngle -= Time.deltaTime * takeOffAngleRate;
+
+                veloDir = Quaternion.Euler(0, 0, curAngle) * -Vector3.right;
+            }
+
+
+            if (takeoffMaxAngle < -curAngle && onGround)
+            {
+                onGround = false;
+                Debug.Log("Plane taking off!");
+            }
+
+            Vector3 frw = Quaternion.Euler(0, 0, flare) * veloDir;
+
+            Vector3 up = new Vector3(0, 1, zAdd * randomBankMult).normalized;
+            transform.rotation = Quaternion.LookRotation(frw, up);
+            transform.position += veloDir * speed * Time.deltaTime;
+
+            //Vector3 p = transform.position;
+            //p.z = runway.transform.position.z + zAdd * randomXMult;
+            //transform.position = p;
+
+            if (alt > 500)
+            {
+                Destroy(gameObject);
+                return;
+            }
+        }
+        else if (state == State.TaxiingToGate || state == State.TaxiingToRunway)
+        {
+
             // follow path
             transform.position += transform.forward * speed * Time.deltaTime;
 
@@ -229,7 +262,7 @@ public class Plane : MonoBehaviour
             }
         }
 
-        progress += Time.deltaTime * progressSpeed * speedCurve.Evaluate(progress);
+        //progress += Time.deltaTime * progressSpeed * speedCurve.Evaluate(progress);
 
         lastState = state;
     }
