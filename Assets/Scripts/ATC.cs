@@ -103,10 +103,18 @@ public class ATC : MonoBehaviour
 
         if (request.type == RunwayRequest.Type.Landing)
         {
+            if (!FreeGatesExist())
+            {
+                Destroy(request.plane);
+                Debug.LogError("Destroyed plane because no gates were available");
+                return;
+            }
+
             if (request.plane)
             {
-                request.plane.gameObject.SetActive(true);
+                //request.plane.gameObject.SetActive(true);
                 SetPlaneToLand(request.plane);
+                Debug.Log(request.plane.name + " cleared for landing");
             }
             else
             {
@@ -146,6 +154,8 @@ public class ATC : MonoBehaviour
         // TODO: Does nothing if all gates are taken!
         Gate gate = GetFreeGate();
         if (gate == null) return;
+
+        plane.gameObject.SetActive(true);
 
         plane.state = Plane.State.Landing;
         plane.gate = gate;
@@ -206,6 +216,11 @@ public class ATC : MonoBehaviour
         plane.name = GetRandomPlaneName();
 
         return plane;
+    }
+
+    public void RemovePlane(Plane plane)
+    {
+        planes.Remove(plane);
     }
 
     const string glyphs = "abcdefghijklmnopqrstuvwxyz"; //add the characters you want
@@ -272,7 +287,7 @@ public class ATC : MonoBehaviour
         return taxiwayPoints;
     }
 
-    const float gizmoL = 1000;
+    const float gizmoL = 5000;
 
     private void OnDrawGizmos()
     {

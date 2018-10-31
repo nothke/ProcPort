@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Flight
 {
@@ -33,6 +34,14 @@ public class Flight
                 progress = Progress.GoToGate;
             }
         }
+        else
+        {
+            if (progress == Progress.Landing)
+            {
+                progress = Progress.Cancelled;
+                Debug.LogWarning(number + " flight canceled");
+            }
+        }
     }
 
     public string PlaneRegistration()
@@ -52,15 +61,18 @@ public class FlightScheduler : MonoBehaviour
 
     private void Start()
     {
+        //BenchmarkOvercrowded();
         BenchmarkScheduleMany(20);
 
-        /*
-        ScheduleRandomArrivingFlight(0);
-        ScheduleRandomArrivingFlight(120);
-        ScheduleRandomArrivingFlight(500);
-        ScheduleRandomArrivingFlight(1000);
-        ScheduleRandomArrivingFlight(300);
-        ScheduleRandomArrivingFlight(1000);*/
+        SortFlightsByArrivalTime();
+    }
+
+    void BenchmarkOvercrowded()
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            ScheduleRandomArrivingFlight(0);
+        }
     }
 
     void BenchmarkScheduleMany(int count)
@@ -142,6 +154,11 @@ public class FlightScheduler : MonoBehaviour
     {
         // TODO: Add your own destinations
         return "Nowhere City";
+    }
+
+    void SortFlightsByArrivalTime()
+    {
+        flights = flights.OrderBy(f => f.arrivalTime).ToList();
     }
 
     private void OnGUI()
