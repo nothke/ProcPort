@@ -266,6 +266,8 @@ public class ATC : MonoBehaviour
         return taxiwayPoints;
     }
 
+
+
     public Vector3[] GetTaxiwayToRunway(Gate gate)
     {
         Vector3 pos = gate.transform.position;
@@ -289,11 +291,11 @@ public class ATC : MonoBehaviour
 
     const float gizmoL = 5000;
 
+    public Color taxiwayColor;
+
     private void OnDrawGizmos()
     {
-        Gizmos.DrawLine(
-            new Vector3(-gizmoL, 0, gateTaxiwayZ),
-            new Vector3(gizmoL, 0, gateTaxiwayZ));
+
 
         if (runway)
         {
@@ -308,7 +310,11 @@ public class ATC : MonoBehaviour
                 new Vector3(gizmoL, 0, runway.transform.position.z + runway.taxiwayThreshold));
         }
 
-        Gizmos.color = Color.yellow;
+        Gizmos.color = taxiwayColor;
+        Gizmos.DrawLine(
+            new Vector3(-gizmoL, 0, gateTaxiwayZ),
+            new Vector3(gizmoL, 0, gateTaxiwayZ));
+
         for (int i = -10; i < 10; i++)
         {
             Gizmos.DrawLine(

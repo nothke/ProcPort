@@ -13,6 +13,8 @@ public class Plane : MonoBehaviour
 
     void Start()
     {
+        gizmoColor = Random.ColorHSV(0, 1, 0.8f, 0.8f, 1, 1);
+        pointHeight = Random.Range(1.0f, 15.0f);
         StateChange();
     }
 
@@ -31,11 +33,14 @@ public class Plane : MonoBehaviour
 
     [Header("Landing")]
     public float startAlt = 100;
+    public float landX = 0;
     public float landingAngle = 3;
     public float landingSpeed = 10;
 
     public float landingAoA = 5;
     public float flareBeginAlt = 10;
+    public float veloFlareBeginAlt = 80;
+    public float touchdownAoA = 0.5f;
     public float flareMaximumAngle;
     public float landingBrakeMult = 2;
     public float noseDropTime = 5;
@@ -163,6 +168,7 @@ public class Plane : MonoBehaviour
 
             Vector3 veloDir = -Vector3.right;
             float flareAltMult = 1.0f / flareBeginAlt;
+            float veloFlareAltMult = 1.0f / veloFlareBeginAlt;
 
             float zAdd = 0;
 
@@ -173,7 +179,7 @@ public class Plane : MonoBehaviour
 
                 speed = landingSpeed;
 
-                float angle = Mathf.Lerp(0.1f, landingAngle, alt * 0.2f);
+                float angle = Mathf.Lerp(touchdownAoA, landingAngle, alt * veloFlareAltMult);
                 veloDir = Quaternion.Euler(0, 0, angle) * -Vector3.right;
                 float flareT = Mathf.Clamp01(alt * flareAltMult);
                 //Debug.Log(flareT);
@@ -331,10 +337,15 @@ public class Plane : MonoBehaviour
                     speed = Mathf.Clamp(speed, gateTaxiSpeed, runwayTaxiSpeed);
                     throttle = THROTTLE_SLOW_TAXI;
                 }
+                else
+                {
+                    speed += Time.deltaTime * 2;
+                    speed = Mathf.Clamp(speed, 0, runwayTaxiSpeed);
+                }
 
                 if (Obstructed())
                 {
-                    speed -= Time.deltaTime * 3;
+                    speed -= Time.deltaTime * 10;
                     speed = Mathf.Clamp(speed, 0, runwayTaxiSpeed);
                 }
 
@@ -413,7 +424,7 @@ public class Plane : MonoBehaviour
 
                     if (Obstructed())
                     {
-                        speed -= Time.deltaTime * 3;
+                        speed -= Time.deltaTime * 10;
                         speed = Mathf.Clamp(speed, 0, runwayTaxiSpeed);
                     }
 
@@ -496,38 +507,55 @@ public class Plane : MonoBehaviour
         transform.rotation *= Quaternion.AngleAxis(turn * turnSpeed, Vector3.up);
     }
 
+    const float zMin = -10;
+    const float zMax = 50;
+    const float xMin = 20;
+
     public bool Obstructed()
     {
+        bool obstructed = false;
+
+
+
         for (int i = 0; i < ATC.e.planes.Count; i++)
         {
             Plane p = ATC.e.planes[i];
 
             if (!p) continue;
+            if (p == this) continue;
             if (!p.gameObject.activeSelf) continue;
             if (!(p.state == State.TaxiingToGate || p.state == State.TaxiingToRunway)) continue;
 
             Vector3 lp = transform.InverseTransformPoint(p.transform.position);
 
-            float zMin = 1;
-            float zMax = 50;
-            float xMin = 10;
-
-            Debug.DrawLine(
-                transform.position + transform.forward * zMax - transform.right * xMin,
-                transform.position + transform.forward * zMax + transform.right * xMin);
-
-            Debug.DrawLine(
-                transform.position + transform.forward * zMin - transform.right * xMin,
-                transform.position + transform.forward * zMin + transform.right * xMin);
-
             if (lp.z > zMin && lp.z < zMax &&
                 lp.x > -xMin && lp.x < xMin)
             {
-                return true;
+                obstructed = true;
+                break;
             }
         }
 
-        return false;
+        Color c = obstructed ? Color.red : Color.green;
+
+        /*
+        Debug.DrawLine(
+            transform.position + transform.forward * zMax - transform.right * xMin,
+            transform.position + transform.forward * zMax + transform.right * xMin, c);
+
+        Debug.DrawLine(
+            transform.position + transform.forward * zMin - transform.right * xMin,
+            transform.position + transform.forward * zMin + transform.right * xMin, c);
+
+        Debug.DrawLine(
+            transform.position + transform.forward * zMin - transform.right * xMin,
+            transform.position + transform.forward * zMax - transform.right * xMin, c);
+
+        Debug.DrawLine(
+            transform.position + transform.forward * zMin + transform.right * xMin,
+            transform.position + transform.forward * zMax + transform.right * xMin, c);*/
+
+        return obstructed;
     }
 
     public PID steerPID;
@@ -558,22 +586,36 @@ public class Plane : MonoBehaviour
         Debug.Log("Sent takeoff request");
     }
 
+    Color gizmoColor;
+    float pointHeight;
+
     private void OnDrawGizmos()
     {
         if (taxiwayPoints != null && taxiwayPoints.Length != 0)
         {
-            Gizmos.color = Color.red;
+            Gizmos.color = gizmoColor;
 
-            for (int i = 0; i < taxiwayPoints.Length - 1; i++)
+            Vector3 pt1 = transform.position;
+            Vector3 pt2 = taxiwayPoints[currentTarget];
+            pt2.y = pointHeight;
+            Gizmos.DrawLine(pt1, pt2);
+
+            for (int i = currentTarget; i < taxiwayPoints.Length - 1; i++)
             {
-                Gizmos.DrawWireSphere(taxiwayPoints[i], validationDistance);
-                Gizmos.DrawLine(taxiwayPoints[i], taxiwayPoints[i + 1]);
+                Vector3 p1 = taxiwayPoints[i];
+                p1.y = pointHeight;
+                Vector3 p2 = taxiwayPoints[i + 1];
+                p2.y = pointHeight;
+
+                //Gizmos.DrawWireSphere(taxiwayPoints[i], validationDistance);
+                Gizmos.DrawLine(p1, p2);
             }
         }
 
+        /*
         if (gate && state == State.TaxiingToGate)
         {
             Gizmos.DrawWireSphere(gate.transform.position, gateSlowdownRange);
-        }
+        }*/
     }
 }

@@ -61,6 +61,8 @@ public class FlightScheduler : MonoBehaviour
 
     private void Start()
     {
+        ScheduleRandomArrivingFlight(0);
+
         //BenchmarkOvercrowded();
         BenchmarkScheduleMany(20);
 
@@ -163,6 +165,8 @@ public class FlightScheduler : MonoBehaviour
 
     private void OnGUI()
     {
+        return;
+
         if (flights.Count > 0)
             for (int i = 0; i < flights.Count; i++)
             {

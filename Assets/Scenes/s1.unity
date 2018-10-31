@@ -564,8 +564,8 @@ Camera:
   m_GameObject: {fileID: 820014782}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.13235295, g: 0.13235295, b: 0.13235295, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -574,7 +574,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 10000
-  field of view: 60
+  field of view: 10
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -599,7 +599,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 820014782}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -298}
+  m_LocalPosition: {x: 29.24, y: 18.8, z: -547.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -837,6 +837,7 @@ MonoBehaviour:
   - {fileID: 647202711}
   planes: []
   gateTaxiwayZ: -80
+  taxiwayColor: {r: 0, g: 0.91724133, b: 1, a: 0.541}
 --- !u!4 &1451120064
 Transform:
   m_ObjectHideFlags: 0
