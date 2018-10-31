@@ -20,6 +20,17 @@ public class ATC : MonoBehaviour
 
     public float gateTaxiwayZ = 10;
 
+    int landingRequests;
+
+    public Queue<RunwayRequest> requestQueue = new Queue<RunwayRequest>();
+
+    public class RunwayRequest
+    {
+        public Plane plane;
+        public enum Type { Landing, TakeOff }
+        public Type type;
+    }
+
     public Gate GetFreeGate()
     {
         // TODO: find random instead of first
@@ -40,7 +51,7 @@ public class ATC : MonoBehaviour
     {
         if (!runway.inUse)
         {
-            SpawnLandingPlane();
+            Test_SpawnLandingPlane();
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -56,7 +67,31 @@ public class ATC : MonoBehaviour
             Time.timeScale = 10;
     }
 
-    void SpawnLandingPlane()
+    void QueuePlaneForLanding()
+    {
+        RunwayRequest request = new RunwayRequest();
+        request.type = RunwayRequest.Type.Landing;
+        requestQueue.Enqueue(request);
+    }
+
+    void ProcessQueue()
+    {
+        if (runway.inUse) return;
+        if (requestQueue.Count == 0) return;
+
+        var request = requestQueue.Dequeue();
+
+        if (request.type == RunwayRequest.Type.Landing)
+        {
+            Test_SpawnLandingPlane();
+        }
+        else
+        {
+            request.plane.ClearForTakeoff();
+        }
+    }
+
+    void Test_SpawnLandingPlane()
     {
         if (runway.inUse) return;
         Gate gate = GetFreeGate();
@@ -71,7 +106,7 @@ public class ATC : MonoBehaviour
         runway.inUse = true;
     }
 
-    void SpawnTakingOffPlane()
+    void Test_SpawnTakingOffPlane()
     {
         Plane plane = CreatePlane();
         plane.state = Plane.State.TakingOff;
@@ -84,7 +119,7 @@ public class ATC : MonoBehaviour
         runway.inUse = true;
     }
 
-    void SpawnDepartingPlane()
+    void Test_SpawnDepartingPlane()
     {
         Gate gate = GetFreeGate();
 
@@ -144,7 +179,7 @@ public class ATC : MonoBehaviour
         Vector3 p0 = new Vector3(gate.transform.position.x, 0, gateTaxiwayZ);
         Vector3 p1 = new Vector3(taxix, 0, gateTaxiwayZ);
         Vector3 p2 = new Vector3(taxix, 0, runway.transform.position.z);
-        Vector3 p3 = new Vector3(taxix - 20, 0, runway.transform.position.z);
+        Vector3 p3 = new Vector3(taxix - 80, 0, runway.transform.position.z);
 
         Vector3[] taxiwayPoints = new Vector3[] { p0, p1, p2, p3 };
 
