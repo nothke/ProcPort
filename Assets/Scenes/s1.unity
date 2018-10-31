@@ -535,6 +535,7 @@ GameObject:
   - component: {fileID: 820014785}
   - component: {fileID: 820014784}
   - component: {fileID: 820014783}
+  - component: {fileID: 820014787}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -574,7 +575,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 10000
-  field of view: 50
+  field of view: 32.8
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -599,12 +600,36 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 820014782}
   m_LocalRotation: {x: 0.065792054, y: -0.9062566, z: 0.15354353, w: 0.38832298}
-  m_LocalPosition: {x: 1138, y: 249, z: 542}
+  m_LocalPosition: {x: 1339, y: 380, z: 734}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 19.232, y: -133.61101, z: 0}
+--- !u!114 &820014787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 820014782}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deadd29cda2ddbe45b56954e552fefcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 1
+  mouseScrollAccel: 2
+  localRotation: 0
+  mouseSensitivity: 100
+  clampAngle: 80
+  canRotate: 1
+  inFixedUpdate: 0
+  useNumpadArrows: 0
+  horizontalAxisName: Horizontal
+  verticalAxisName: Vertical
+  parentable: {fileID: 0}
+  disableOtherCameraRig: {fileID: 0}
+  inCarCamera: {fileID: 0}
 --- !u!1 &1158449950
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,7 +732,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1212904778}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 79.6}
+  m_LocalPosition: {x: 887, y: 0, z: 80}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

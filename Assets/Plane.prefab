@@ -4095,7 +4095,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   runway: {fileID: 0}
-  startAlt: 1000
+  startAlt: 100
+  startX: 0
   landingAngle: 10
   landingSpeed: 80
   landingAoA: 0
@@ -4107,10 +4108,13 @@ MonoBehaviour:
   noseDropTime: 5
   validationDistance: 30
   runwayTaxiSpeed: 12
-  pushBackSpeed: 1
+  pushBackSpeed: 5
   gateTaxiSpeed: 5
   gateSlowdownRange: 160
   afterPushbackWait: 15
+  pushbackTurnOffset: -30
+  pushbackTurnRate: 10
+  pushabackBlockerOffset: -70
   speedUp: 4
   startRotateAtSpeed: 80
   rotateAngleRate: 5

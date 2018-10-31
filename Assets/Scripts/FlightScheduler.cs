@@ -61,19 +61,19 @@ public class FlightScheduler : MonoBehaviour
 
     private void Start()
     {
-        ScheduleRandomArrivingFlight(0);
+        //ScheduleRandomArrivingFlight(0);
 
-        //BenchmarkOvercrowded();
-        BenchmarkScheduleMany(20);
+        BenchmarkOvercrowded();
+        //BenchmarkScheduleMany(20);
 
         SortFlightsByArrivalTime();
     }
 
     void BenchmarkOvercrowded()
     {
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 30; i++)
         {
-            ScheduleRandomArrivingFlight(0);
+            ScheduleRandomArrivingFlight(i * 80);
         }
     }
 

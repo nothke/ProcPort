@@ -14,7 +14,7 @@ public class Plane : MonoBehaviour
     void Start()
     {
         gizmoColor = Random.ColorHSV(0, 1, 0.8f, 0.8f, 1, 1);
-        pointHeight = Random.Range(1.0f, 15.0f);
+        pointHeight = Random.Range(1.0f, 2.0f);
         StateChange();
     }
 
@@ -33,7 +33,7 @@ public class Plane : MonoBehaviour
 
     [Header("Landing")]
     public float startAlt = 100;
-    public float landX = 0;
+    public float startX = 0;
     public float landingAngle = 3;
     public float landingSpeed = 10;
 
@@ -53,6 +53,9 @@ public class Plane : MonoBehaviour
     public float gateTaxiSpeed = 5;
     public float gateSlowdownRange = 100;
     public float afterPushbackWait = 10;
+    public float pushbackTurnOffset = -10;
+    public float pushbackTurnRate = 10;
+    public float pushabackBlockerOffset = -30;
 
     [Header("TakeOff")]
     public float speedUp = 1;
@@ -75,8 +78,8 @@ public class Plane : MonoBehaviour
         switch (state)
         {
             case State.Landing:
-                float x = startAlt * Mathf.Tan((90 - landingAngle) * Mathf.Deg2Rad);
-                //Debug.Log(x);
+                // calculates position from slope and start altitude
+                float x = startX + startAlt * Mathf.Tan((90 - landingAngle) * Mathf.Deg2Rad);
                 transform.position = runway.transform.position + new Vector3(x, startAlt, 0);
                 break;
             case State.TakingOff:
@@ -98,10 +101,19 @@ public class Plane : MonoBehaviour
                 gate.plane = null;
                 taxiwayPoints = ATC.e.GetTaxiwayToRunway(gate);
 
+                SetPushbackPoint();
+
                 break;
             default:
                 break;
         }
+    }
+
+    void SetPushbackPoint()
+    {
+        pushbackPoint = gate.transform.position;
+        pushbackPoint.z = ATC.e.gateTaxiwayZ;
+        pushbackPoint.x += pushabackBlockerOffset;
     }
 
     public Gate gate;
@@ -379,12 +391,12 @@ public class Plane : MonoBehaviour
             // pushback
             if (isPushback)
             {
-                bool beforeTurn = transform.position.z < ATC.e.gateTaxiwayZ - 10;
+                bool beforeTurn = transform.position.z < ATC.e.gateTaxiwayZ + pushbackTurnOffset;
 
                 if (beforeTurn)
                 {
                     speed += -Time.deltaTime;
-                    speed = Mathf.Clamp(speed, -runwayTaxiSpeed, 0);
+                    speed = Mathf.Clamp(speed, -pushBackSpeed, 0);
                 }
                 else // while turning
                 {
@@ -393,11 +405,12 @@ public class Plane : MonoBehaviour
                     float currentAngle = Vector3.SignedAngle(transform.forward, -runway.transform.forward, Vector3.up);
                     //Debug.Log(currentAngle);
 
-                    SteerTowards(Vector3.right, 30);
+                    // pushback turn
+                    SteerTowards(Vector3.right, pushbackTurnRate);
 
-                    if (currentAngle < 0)
+                    if (currentAngle < -5)
                     {
-                        speed += -Time.deltaTime;
+                        speed += -Time.deltaTime * 2;
                         speed = Mathf.Clamp(speed, -pushBackSpeed, 0);
                     }
                     else
@@ -507,15 +520,13 @@ public class Plane : MonoBehaviour
         transform.rotation *= Quaternion.AngleAxis(turn * turnSpeed, Vector3.up);
     }
 
-    const float zMin = -10;
-    const float zMax = 50;
-    const float xMin = 20;
+    const float zMin = 5;
+    const float zMax = 70;
+    const float xMin = 30;
 
     public bool Obstructed()
     {
         bool obstructed = false;
-
-
 
         for (int i = 0; i < ATC.e.planes.Count; i++)
         {
@@ -526,7 +537,10 @@ public class Plane : MonoBehaviour
             if (!p.gameObject.activeSelf) continue;
             if (!(p.state == State.TaxiingToGate || p.state == State.TaxiingToRunway)) continue;
 
-            Vector3 lp = transform.InverseTransformPoint(p.transform.position);
+            Vector3 pos = p.transform.position;
+            if (p.isPushback) pos = p.pushbackPoint;
+
+            Vector3 lp = transform.InverseTransformPoint(pos);
 
             if (lp.z > zMin && lp.z < zMax &&
                 lp.x > -xMin && lp.x < xMin)
@@ -538,7 +552,6 @@ public class Plane : MonoBehaviour
 
         Color c = obstructed ? Color.red : Color.green;
 
-        /*
         Debug.DrawLine(
             transform.position + transform.forward * zMax - transform.right * xMin,
             transform.position + transform.forward * zMax + transform.right * xMin, c);
@@ -553,7 +566,7 @@ public class Plane : MonoBehaviour
 
         Debug.DrawLine(
             transform.position + transform.forward * zMin + transform.right * xMin,
-            transform.position + transform.forward * zMax + transform.right * xMin, c);*/
+            transform.position + transform.forward * zMax + transform.right * xMin, c);
 
         return obstructed;
     }
@@ -589,8 +602,16 @@ public class Plane : MonoBehaviour
     Color gizmoColor;
     float pointHeight;
 
+    Vector3 pushbackPoint;
+
     private void OnDrawGizmos()
     {
+        if (isPushback)
+        {
+            Gizmos.color = gizmoColor;
+            Gizmos.DrawRay(pushbackPoint, Vector3.up * 10);
+        }
+
         if (taxiwayPoints != null && taxiwayPoints.Length != 0)
         {
             Gizmos.color = gizmoColor;
