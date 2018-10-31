@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SteerTest : MonoBehaviour
+public class Test_Steer : MonoBehaviour
 {
     public PID steerPid;
 

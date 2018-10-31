@@ -154,34 +154,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   plane: {fileID: 0}
---- !u!1 &202467391
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 202467392}
-  m_Layer: 0
-  m_Name: GameObject (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &202467392
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 202467391}
-  m_LocalRotation: {x: -0, y: -0.3065373, z: -0, w: 0.95185864}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: -35.701, z: 0}
 --- !u!1 &266852698
 GameObject:
   m_ObjectHideFlags: 0
@@ -358,7 +330,7 @@ GameObject:
   - component: {fileID: 748094216}
   - component: {fileID: 748094219}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Steer Test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -417,7 +389,7 @@ Transform:
   m_Children:
   - {fileID: 1908981661}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &748094219
 MonoBehaviour:
@@ -437,7 +409,7 @@ MonoBehaviour:
   steerTarget: -0.36
   maxSteer: 30
   maxAngVelo: 200
-  targetDir: {fileID: 202467392}
+  targetDir: {fileID: 0}
 --- !u!1 &777117288
 GameObject:
   m_ObjectHideFlags: 0
@@ -447,7 +419,6 @@ GameObject:
   m_Component:
   - component: {fileID: 777117292}
   - component: {fileID: 777117291}
-  - component: {fileID: 777117290}
   - component: {fileID: 777117289}
   m_Layer: 0
   m_Name: Ground
@@ -490,20 +461,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!64 &777117290
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 777117288}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 14
-  m_SkinWidth: 0.01
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!33 &777117291
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -522,7 +479,7 @@ Transform:
   m_LocalScale: {x: 1394.2062, y: 1394.2052, z: 1394.2052}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &820014782
 GameObject:
@@ -910,7 +867,7 @@ GameObject:
   - component: {fileID: 1511229315}
   - component: {fileID: 1511229314}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Get Taxiway Test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -945,7 +902,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 143.34001, z: 0}
 --- !u!1 &1908981660
 GameObject:
