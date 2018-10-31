@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class Plane : MonoBehaviour
 {
-    public float startAlt = 100;
-    public float landingAngle = 3;
-    public float landingSpeed = 10;
+
+
 
     //public float landingLength;
     //public float progressSpeed;
@@ -29,15 +28,26 @@ public class Plane : MonoBehaviour
     Vector3[] taxiwayPoints;
     int currentTarget = 0;
 
-    public float runwayTaxiSpeed = 5;
 
     [Header("Landing")]
+    public float startAlt = 100;
+    public float landingAngle = 3;
+    public float landingSpeed = 10;
+
     public float landingAoA = 5;
     public float flareBeginAlt = 10;
     public float flareMaximumAngle;
+    public float landingBrakeMult = 2;
     public float noseDropTime = 5;
     float speed = 0;
     public float validationDistance = 1;
+
+    [Header("Taxiing")]
+    public float runwayTaxiSpeed = 12;
+    public float pushBackSpeed = 5;
+    public float gateTaxiSpeed = 5;
+    public float gateSlowdownRange = 100;
+    public float afterPushbackWait = 10;
 
     [Header("TakeOff")]
     public float speedUp = 1;
@@ -47,6 +57,13 @@ public class Plane : MonoBehaviour
     public float takeoffSpeed = 35;
     public float takeoffMaxAngle = -10;
     public float takeOffAngleRate = 5;
+    public float takeOffNoiseMult = 0.5f;
+
+    const float THROTTLE_LANDING = 0.7f;
+    const float THROTTLE_REVERSETHRUST = 1;
+    const float THROTTLE_TAXI = 0.5f;
+    const float THROTTLE_SLOW_TAXI = 0.3f;
+    const float THROTTLE_TAKEOFF = 1;
 
     void StateChange()
     {
@@ -108,11 +125,21 @@ public class Plane : MonoBehaviour
         return Quaternion.Euler(0, 0, landingAngle) * -Vector3.right;
     }
 
-    bool isPushback;
+    public bool isPushback { get; private set; }
 
     float steerRate;
     float steerTarget;
     float steerAngle;
+    float pushbackEndedTime;
+
+    public float throttle { get; private set; }
+
+    bool hasRunwayClearance;
+
+    public void ClearForTakeoff()
+    {
+        hasRunwayClearance = true;
+    }
 
     void Update()
     {
@@ -125,6 +152,7 @@ public class Plane : MonoBehaviour
         // UPDATE
         if (state == State.Landing)
         {
+
 
             if (!runway)
             {
@@ -140,19 +168,23 @@ public class Plane : MonoBehaviour
             if (!onGround)
             {
                 float zAddNoise = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
-                zAdd = Mathf.Lerp(0, zAddNoise, alt * 0.2f);
+                zAdd = Mathf.Lerp(0, zAddNoise, alt * 0.05f);
 
                 speed = landingSpeed;
 
                 float angle = Mathf.Lerp(0.1f, landingAngle, alt * 0.2f);
                 veloDir = Quaternion.Euler(0, 0, angle) * -Vector3.right;
-                flare = Mathf.Lerp(flareMaximumAngle, landingAoA, alt * flareAltMult);
+                float flareT = Mathf.Clamp01(alt * flareAltMult);
+                Debug.Log(flareT);
+                flare = Mathf.Lerp(flareMaximumAngle, landingAoA, flareT);
+
+                throttle = THROTTLE_LANDING;
             }
             else
             {
                 if (speed > runwayTaxiSpeed)
                 {
-                    speed -= Time.deltaTime;
+                    speed -= Time.deltaTime * landingBrakeMult;
                 }
 
                 float flareSign = Mathf.Sign(flareMaximumAngle);
@@ -161,6 +193,8 @@ public class Plane : MonoBehaviour
                 {
                     flare -= flareSign * Time.deltaTime * 2;
                 }
+
+                throttle = THROTTLE_REVERSETHRUST;
             }
 
             if (alt < 0 && !onGround)
@@ -171,9 +205,9 @@ public class Plane : MonoBehaviour
                 veloDir = -Vector3.right;
                 flareSign = Mathf.Sign(flareMaximumAngle);
                 onGround = true;
-                Debug.Log("They touch Martin!");
+                //Debug.Log("They touch Martin!");
             }
-            Vector3 frw = Quaternion.Euler(0, 0, flare) * veloDir;
+            Vector3 frw = Quaternion.Euler(0, 0, flare) * runway.transform.forward;
 
             Vector3 up = new Vector3(0, 1, zAdd * randomBankMult).normalized;
             transform.rotation = Quaternion.LookRotation(frw, up);
@@ -192,6 +226,8 @@ public class Plane : MonoBehaviour
                 transform.rotation = runway.transform.rotation;
 
                 state = State.TaxiingToGate;
+
+                throttle = THROTTLE_TAXI;
             }
         }
         else if (state == State.TakingOff)
@@ -211,7 +247,7 @@ public class Plane : MonoBehaviour
             float flareAltMult = 1.0f / flareBeginAlt;
 
             float zAddNoise = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
-            float zAdd = Mathf.Lerp(0, zAddNoise, alt * 0.2f);
+            float zAdd = Mathf.Lerp(0, zAddNoise * takeOffNoiseMult, alt * 0.2f);
 
             if (onGround)
             {
@@ -256,6 +292,8 @@ public class Plane : MonoBehaviour
                 //Destroy(gameObject);
                 return;
             }
+
+            throttle = THROTTLE_TAKEOFF;
         }
         else if (state == State.TaxiingToGate)
         {
@@ -264,16 +302,16 @@ public class Plane : MonoBehaviour
             if (taxiwayPoints == null)
             {
                 speed -= Time.deltaTime * 1;
-                speed = Mathf.Clamp(speed, 0, 5);
+                speed = Mathf.Clamp(speed, 0, runwayTaxiSpeed);
 
                 if (speed == 0)
+                {
                     state = State.AtGate;
+                    throttle = 0;
+                }
             }
             else
             {
-                // follow path
-                //transform.position += transform.forward * speed * Time.deltaTime;
-
                 // follow path
                 Vector3 tgt = taxiwayPoints[currentTarget];
 
@@ -286,7 +324,14 @@ public class Plane : MonoBehaviour
 
                 float distToGate = Vector3.Distance(gate.transform.position, transform.position);
 
-                speed = Mathf.Lerp(1, 5, distToGate * 0.01f);
+                if (distToGate < gateSlowdownRange)
+                {
+                    speed -= Time.deltaTime * 2;
+                    speed = Mathf.Clamp(speed, gateTaxiSpeed, runwayTaxiSpeed);
+                    throttle = THROTTLE_SLOW_TAXI;
+                }
+
+                //speed = Mathf.Lerp(1, runwayTaxiSpeed, distToGate / gateSlowdownRange);
 
                 // validate node
                 if (Vector3.Distance(transform.position, tgt) < validationDistance)
@@ -323,10 +368,11 @@ public class Plane : MonoBehaviour
                 if (beforeTurn)
                 {
                     speed += -Time.deltaTime;
-                    speed = Mathf.Clamp(speed, -5, 0);
+                    speed = Mathf.Clamp(speed, -runwayTaxiSpeed, 0);
                 }
-                else
+                else // while turning
                 {
+                    throttle = THROTTLE_SLOW_TAXI;
 
                     float currentAngle = Vector3.SignedAngle(transform.forward, -runway.transform.forward, Vector3.up);
                     //Debug.Log(currentAngle);
@@ -336,12 +382,12 @@ public class Plane : MonoBehaviour
                     if (currentAngle < 0)
                     {
                         speed += -Time.deltaTime;
-                        speed = Mathf.Clamp(speed, -5, 0);
+                        speed = Mathf.Clamp(speed, -pushBackSpeed, 0);
                     }
                     else
                     {
                         isPushback = false;
-
+                        pushbackEndedTime = Time.time;
                     }
                 }
             }
@@ -351,12 +397,20 @@ public class Plane : MonoBehaviour
                 if (transform.position.z > runway.GetThreshold() - 20 && runway.inUse)
                 {
                     speed -= Time.deltaTime;
-                    speed = Mathf.Clamp(speed, 0, 5);
+                    speed = Mathf.Clamp(speed, 0, runwayTaxiSpeed);
                 }
                 else
                 {
                     speed += Time.deltaTime;
-                    speed = Mathf.Clamp(speed, -5, 5);
+
+                    if (Time.time - pushbackEndedTime < afterPushbackWait)
+                        // wait after pushback
+                        speed = Mathf.Clamp(speed, -runwayTaxiSpeed, 0);
+                    else // proceed to follow path
+                    {
+                        speed = Mathf.Clamp(speed, -runwayTaxiSpeed, runwayTaxiSpeed);
+                        throttle = THROTTLE_TAXI;
+                    }
                 }
 
                 // follow path
@@ -365,8 +419,6 @@ public class Plane : MonoBehaviour
 
                 Vector3 dir = (taxiwayPoints[currentTarget] - transform.position).normalized;
                 SteerTowards(dir, 30);
-
-
 
                 // validate node
                 if (Vector3.Distance(transform.position, tgt) < validationDistance)
@@ -457,6 +509,11 @@ public class Plane : MonoBehaviour
                 Gizmos.DrawWireSphere(taxiwayPoints[i], validationDistance);
                 Gizmos.DrawLine(taxiwayPoints[i], taxiwayPoints[i + 1]);
             }
+        }
+
+        if (gate && state == State.TaxiingToGate)
+        {
+            Gizmos.DrawWireSphere(gate.transform.position, gateSlowdownRange);
         }
     }
 }
