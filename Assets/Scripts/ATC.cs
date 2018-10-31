@@ -31,6 +31,16 @@ public class ATC : MonoBehaviour
         public Type type;
     }
 
+    public bool FreeGatesExist()
+    {
+        for (int i = 0; i < gates.Count; i++)
+        {
+            if (!gates[i].plane) return true;
+        }
+
+        return false;
+    }
+
     public Gate GetFreeGate()
     {
         // TODO: find random instead of first
@@ -44,8 +54,8 @@ public class ATC : MonoBehaviour
 
     void Start()
     {
-        QueuePlaneForLanding();
-        QueuePlaneForLanding();
+        //QueuePlaneForLanding();
+        //QueuePlaneForLanding();
     }
 
     void Update()
@@ -63,6 +73,9 @@ public class ATC : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha4))
             Time.timeScale = 10;
+
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+            Time.timeScale = 20;
     }
 
     [ContextMenu("Queue Landing Plane")]
@@ -70,6 +83,14 @@ public class ATC : MonoBehaviour
     {
         RunwayRequest request = new RunwayRequest();
         request.type = RunwayRequest.Type.Landing;
+        requestQueue.Enqueue(request);
+    }
+
+    public void SubmitPlaneForLanding(Plane plane)
+    {
+        RunwayRequest request = new RunwayRequest();
+        request.type = RunwayRequest.Type.Landing;
+        request.plane = plane;
         requestQueue.Enqueue(request);
     }
 
@@ -82,9 +103,17 @@ public class ATC : MonoBehaviour
 
         if (request.type == RunwayRequest.Type.Landing)
         {
-            Plane p = SpawnLandingPlane();
-            if (!p) return;
-            Debug.Log(p.name + " cleared for landing");
+            if (request.plane)
+            {
+                request.plane.gameObject.SetActive(true);
+                SetPlaneToLand(request.plane);
+            }
+            else
+            {
+                Plane p = SpawnLandingPlane();
+                if (!p) return;
+                Debug.Log(p.name + " cleared for landing");
+            }
         }
         else
         {
@@ -110,6 +139,19 @@ public class ATC : MonoBehaviour
         runway.inUse = true;
 
         return plane;
+    }
+
+    void SetPlaneToLand(Plane plane)
+    {
+        // TODO: Does nothing if all gates are taken!
+        Gate gate = GetFreeGate();
+        if (gate == null) return;
+
+        plane.state = Plane.State.Landing;
+        plane.gate = gate;
+
+        gate.plane = plane;
+        runway.inUse = true;
     }
 
     void Test_SpawnLandingPlane()
@@ -153,8 +195,7 @@ public class ATC : MonoBehaviour
         plane.transform.rotation = gate.transform.rotation;
     }
 
-
-    Plane CreatePlane()
+    public Plane CreatePlane()
     {
         GameObject planeGO = Instantiate(planePrefab);
         Plane plane = planeGO.GetComponent<Plane>();
@@ -184,6 +225,12 @@ public class ATC : MonoBehaviour
 
     public Vector3[] GetTaxiwayToGate(Vector3 inputPos, Vector3 inputFrw, Gate gate)
     {
+        if (gate == null)
+        {
+            Debug.LogError("No gate!");
+            return null;
+        }
+
         int index;
         if (inputFrw.x < 0)
             index = Mathf.FloorToInt(inputPos.x / runway.taxiwayDistance);
@@ -211,7 +258,7 @@ public class ATC : MonoBehaviour
         int index;
         index = Mathf.CeilToInt(pos.x / runway.taxiwayDistance);
 
-        Debug.Log(index);
+        //Debug.Log(index);
 
         float taxix = index * runway.taxiwayDistance;
 

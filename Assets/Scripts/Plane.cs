@@ -88,7 +88,7 @@ public class Plane : MonoBehaviour
                 break;
             case State.TaxiingToRunway:
                 currentTarget = 0;
-                Debug.Log("Got points to runway");
+                //Debug.Log("Got points to runway");
                 isPushback = true;
                 gate.plane = null;
                 taxiwayPoints = ATC.e.GetTaxiwayToRunway(gate);
