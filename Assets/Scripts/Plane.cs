@@ -126,7 +126,6 @@ public class Plane : MonoBehaviour
     bool onGround;
 
     float flare;
-    float flareSign;
 
     float curAngle = 0;
 
@@ -222,7 +221,6 @@ public class Plane : MonoBehaviour
                 v.y = 0;
                 transform.position = v;
                 veloDir = -Vector3.right;
-                flareSign = Mathf.Sign(flareMaximumAngle);
                 onGround = true;
                 //Debug.Log("They touch Martin!");
             }
@@ -263,7 +261,6 @@ public class Plane : MonoBehaviour
             }
 
             Vector3 veloDir = Quaternion.Euler(0, 0, curAngle) * -Vector3.right;
-            float flareAltMult = 1.0f / flareBeginAlt;
 
             float zAddNoise = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
             float zAdd = Mathf.Lerp(0, zAddNoise * takeOffNoiseMult, alt * 0.2f);

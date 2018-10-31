@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class SteerTest : MonoBehaviour
 {
-
-    float speed = 5;
-
     public PID steerPid;
 
     [Range(-1, 1)]

@@ -165,7 +165,7 @@ public class FlightScheduler : MonoBehaviour
 
     private void OnGUI()
     {
-        return;
+        //return;
 
         if (flights.Count > 0)
             for (int i = 0; i < flights.Count; i++)
