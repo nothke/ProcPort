@@ -430,9 +430,11 @@ public class Plane : MonoBehaviour
                     currentTarget++;
                     if (currentTarget >= taxiwayPoints.Length)
                     {
+                        // Taxi to runway end
                         taxiwayPoints = null;
                         state = State.TakingOff;
                         onGround = true;
+                        alreadyUnusedRunway = false;
                     }
                 }
             }

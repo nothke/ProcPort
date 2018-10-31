@@ -66,7 +66,7 @@ public class ATC : MonoBehaviour
     }
 
     [ContextMenu("Queue Landing Plane")]
-    void QueuePlaneForLanding()
+    public void QueuePlaneForLanding()
     {
         RunwayRequest request = new RunwayRequest();
         request.type = RunwayRequest.Type.Landing;
@@ -83,6 +83,7 @@ public class ATC : MonoBehaviour
         if (request.type == RunwayRequest.Type.Landing)
         {
             Plane p = SpawnLandingPlane();
+            if (!p) return;
             Debug.Log(p.name + " cleared for landing");
         }
         else
