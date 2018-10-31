@@ -444,11 +444,6 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.size
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 4851400260184142, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}
       propertyPath: m_LocalPosition.x
       value: -184.36176
@@ -480,76 +475,6 @@ Prefab:
     - target: {fileID: 4851400260184142, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}
       propertyPath: m_RootOrder
       value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[0].inSlope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[0].outSlope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[0].tangentMode
-      value: 34
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[1].time
-      value: 0.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[1].value
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[1].inSlope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[1].outSlope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[1].tangentMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_RotationOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[2].time
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[2].value
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[2].inSlope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[2].outSlope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
-        type: 2}
-      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[2].tangentMode
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}

@@ -1075,6 +1075,7 @@ MonoBehaviour:
   takeoffSpeed: 85
   takeoffMaxAngle: -15
   takeOffAngleRate: 5
+  takeOffNoiseMult: 0.5
   gate: {fileID: 0}
   flareAngleCurve:
     serializedVersion: 2

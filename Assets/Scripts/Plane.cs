@@ -175,7 +175,7 @@ public class Plane : MonoBehaviour
                 float angle = Mathf.Lerp(0.1f, landingAngle, alt * 0.2f);
                 veloDir = Quaternion.Euler(0, 0, angle) * -Vector3.right;
                 float flareT = Mathf.Clamp01(alt * flareAltMult);
-                Debug.Log(flareT);
+                //Debug.Log(flareT);
                 flare = Mathf.Lerp(flareMaximumAngle, landingAoA, flareT);
 
                 throttle = THROTTLE_LANDING;
@@ -348,7 +348,7 @@ public class Plane : MonoBehaviour
                 {
                     if (transform.position.z < runway.transform.position.z + runway.taxiwayThreshold)
                     {
-                        Debug.Log("Freeing runway", gameObject);
+                        //Debug.Log("Freeing runway", gameObject);
                         runway.inUse = false;
                         alreadyUnusedRunway = true;
                         //runway = null;

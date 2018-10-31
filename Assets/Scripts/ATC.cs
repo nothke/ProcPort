@@ -44,15 +44,13 @@ public class ATC : MonoBehaviour
 
     void Start()
     {
-        //SpawnDepartingPlane();
+        QueuePlaneForLanding();
+        QueuePlaneForLanding();
     }
 
     void Update()
     {
-        if (!runway.inUse)
-        {
-            Test_SpawnLandingPlane();
-        }
+        ProcessQueue();
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
             Time.timeScale = 1;
@@ -83,10 +81,12 @@ public class ATC : MonoBehaviour
 
         if (request.type == RunwayRequest.Type.Landing)
         {
+            Debug.Log("Plane cleared for landing");
             Test_SpawnLandingPlane();
         }
         else
         {
+            Debug.Log("Plane cleared for takeoff");
             request.plane.ClearForTakeoff();
         }
     }
