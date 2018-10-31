@@ -273,7 +273,7 @@ public class ATC : MonoBehaviour
         Vector3 pos = gate.transform.position;
 
         int index;
-        index = Mathf.CeilToInt(pos.x / runway.taxiwayDistance);
+        index = Mathf.CeilToInt(pos.x / runway.taxiwayDistance) + 1;
 
         //Debug.Log(index);
 
