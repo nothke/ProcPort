@@ -71,7 +71,7 @@ public class Plane : MonoBehaviour
         {
             case State.Landing:
                 float x = startAlt * Mathf.Tan((90 - landingAngle) * Mathf.Deg2Rad);
-                Debug.Log(x);
+                //Debug.Log(x);
                 transform.position = runway.transform.position + new Vector3(x, startAlt, 0);
                 break;
             case State.TakingOff:
@@ -135,6 +135,7 @@ public class Plane : MonoBehaviour
     public float throttle { get; private set; }
 
     bool hasRunwayClearance;
+    bool requestSent;
 
     public void ClearForTakeoff()
     {
@@ -394,9 +395,12 @@ public class Plane : MonoBehaviour
             else
             {
                 // Wait for runway to be free
-                if (transform.position.z > runway.GetThreshold() - 20 && runway.inUse)
+                if (transform.position.z > runway.GetThreshold() - 20 && !hasRunwayClearance)
                 {
-                    speed -= Time.deltaTime;
+                    if (!requestSent)
+                        SendTakeoffRequest();
+
+                    speed -= Time.deltaTime * 4;
                     speed = Mathf.Clamp(speed, 0, runwayTaxiSpeed);
                 }
                 else
@@ -496,6 +500,16 @@ public class Plane : MonoBehaviour
         turnVelo = Mathf.Clamp(turnVelo, -maxAngVelo, maxAngVelo);
 
         transform.Rotate(new Vector3(0, turnVelo * Time.deltaTime, 0));
+    }
+
+    void SendTakeoffRequest()
+    {
+        ATC.RunwayRequest request = new ATC.RunwayRequest();
+        request.plane = this;
+        request.type = ATC.RunwayRequest.Type.TakeOff;
+        ATC.e.requestQueue.Enqueue(request);
+        requestSent = true;
+        Debug.Log("Sent takeoff request");
     }
 
     private void OnDrawGizmos()

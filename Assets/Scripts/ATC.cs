@@ -65,6 +65,7 @@ public class ATC : MonoBehaviour
             Time.timeScale = 10;
     }
 
+    [ContextMenu("Queue Landing Plane")]
     void QueuePlaneForLanding()
     {
         RunwayRequest request = new RunwayRequest();
@@ -81,14 +82,33 @@ public class ATC : MonoBehaviour
 
         if (request.type == RunwayRequest.Type.Landing)
         {
-            Debug.Log("Plane cleared for landing");
-            Test_SpawnLandingPlane();
+            Plane p = SpawnLandingPlane();
+            Debug.Log(p.name + " cleared for landing");
         }
         else
         {
-            Debug.Log("Plane cleared for takeoff");
+            Debug.Log(request.plane.name + " cleared for takeoff");
             request.plane.ClearForTakeoff();
         }
+
+        runway.inUse = true;
+    }
+
+    Plane SpawnLandingPlane()
+    {
+        // HMM WHAT TO DO?
+        Gate gate = GetFreeGate();
+        if (gate == null) return null;
+
+        Plane plane = CreatePlane();
+
+        plane.state = Plane.State.Landing;
+        plane.gate = gate;
+
+        gate.plane = plane;
+        runway.inUse = true;
+
+        return plane;
     }
 
     void Test_SpawnLandingPlane()
@@ -132,6 +152,7 @@ public class ATC : MonoBehaviour
         plane.transform.rotation = gate.transform.rotation;
     }
 
+
     Plane CreatePlane()
     {
         GameObject planeGO = Instantiate(planePrefab);
@@ -140,7 +161,24 @@ public class ATC : MonoBehaviour
         plane.runway = runway;
         planes.Add(plane);
 
+        plane.name = GetRandomPlaneName();
+
         return plane;
+    }
+
+    const string glyphs = "abcdefghijklmnopqrstuvwxyz"; //add the characters you want
+
+    // TODO: Move to database or smth
+    string GetRandomPlaneName()
+    {
+        string str = "";
+        for (int i = 0; i < 5; i++)
+        {
+            if (i == 1) str += "-";
+            str += char.ToUpper(glyphs[Random.Range(0, glyphs.Length)]);
+        }
+
+        return str;
     }
 
     public Vector3[] GetTaxiwayToGate(Vector3 inputPos, Vector3 inputFrw, Gate gate)
