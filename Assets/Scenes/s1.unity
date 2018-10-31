@@ -176,7 +176,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 266852698}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 22.56, y: 0, z: -29.4}
+  m_LocalPosition: {x: 22.56, y: 0, z: -224}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -217,7 +217,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 475536120}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -102.859985, y: 0, z: -29.399998}
+  m_LocalPosition: {x: -102.859985, y: 0, z: -224}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -258,7 +258,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 550197256}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -365, y: 0, z: -29.399998}
+  m_LocalPosition: {x: -365, y: 0, z: -224}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -281,7 +281,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &748094216
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -431,12 +431,129 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 820014782}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 1, z: -298}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1099850861
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851400260184142, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -184.36176
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851400260184142, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 49.655994
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851400260184142, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -113.44537
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851400260184142, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851400260184142, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851400260184142, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851400260184142, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851400260184142, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[0].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[0].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[0].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[1].time
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[1].value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[1].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[1].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[1].tangentMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[2].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[2].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[2].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[2].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114427877058434236, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
+        type: 2}
+      propertyPath: turbulenceVolumeCurve.m_Curve.Array.data[2].tangentMode
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1158449950
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,8 +646,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb001d95c53b0f44588eaf6ca00d7618, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  taxiwayDistance: 100
-  taxiwayThreshold: -10
+  taxiwayDistance: 300
+  taxiwayThreshold: -40
   inUse: 0
 --- !u!4 &1212904780
 Transform:
@@ -581,7 +698,7 @@ MonoBehaviour:
   - {fileID: 2005464540}
   - {fileID: 475536121}
   planes: []
-  gateTaxiwayZ: 10
+  gateTaxiwayZ: -80
 --- !u!4 &1451120064
 Transform:
   m_ObjectHideFlags: 0
@@ -748,7 +865,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2005464539}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 284.7, y: 0, z: -29.4}
+  m_LocalPosition: {x: 284.7, y: 0, z: -224}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
