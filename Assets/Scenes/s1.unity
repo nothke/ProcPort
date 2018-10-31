@@ -830,6 +830,7 @@ GameObject:
   - component: {fileID: 1451120064}
   - component: {fileID: 1451120063}
   - component: {fileID: 1451120065}
+  - component: {fileID: 1451120066}
   m_Layer: 0
   m_Name: ATC
   m_TagString: Untagged
@@ -888,6 +889,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   atc: {fileID: 1451120063}
+--- !u!114 &1451120066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1451120062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed2ab660944ddd84db21a2837760ea64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1511229313
 GameObject:
   m_ObjectHideFlags: 0
