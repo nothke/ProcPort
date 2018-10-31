@@ -332,7 +332,11 @@ public class Plane : MonoBehaviour
                     throttle = THROTTLE_SLOW_TAXI;
                 }
 
-                //speed = Mathf.Lerp(1, runwayTaxiSpeed, distToGate / gateSlowdownRange);
+                if (Obstructed())
+                {
+                    speed -= Time.deltaTime * 3;
+                    speed = Mathf.Clamp(speed, 0, runwayTaxiSpeed);
+                }
 
                 // validate node
                 if (Vector3.Distance(transform.position, tgt) < validationDistance)
@@ -406,6 +410,12 @@ public class Plane : MonoBehaviour
                 else
                 {
                     speed += Time.deltaTime;
+
+                    if (Obstructed())
+                    {
+                        speed -= Time.deltaTime * 3;
+                        speed = Mathf.Clamp(speed, 0, runwayTaxiSpeed);
+                    }
 
                     if (Time.time - pushbackEndedTime < afterPushbackWait)
                         // wait after pushback
@@ -484,6 +494,40 @@ public class Plane : MonoBehaviour
         float turn = steerVector.x / steerVector.magnitude * Time.deltaTime;
 
         transform.rotation *= Quaternion.AngleAxis(turn * turnSpeed, Vector3.up);
+    }
+
+    public bool Obstructed()
+    {
+        for (int i = 0; i < ATC.e.planes.Count; i++)
+        {
+            Plane p = ATC.e.planes[i];
+
+            if (!p) continue;
+            if (!p.gameObject.activeSelf) continue;
+            if (!(p.state == State.TaxiingToGate || p.state == State.TaxiingToRunway)) continue;
+
+            Vector3 lp = transform.InverseTransformPoint(p.transform.position);
+
+            float zMin = 1;
+            float zMax = 50;
+            float xMin = 10;
+
+            Debug.DrawLine(
+                transform.position + transform.forward * zMax - transform.right * xMin,
+                transform.position + transform.forward * zMax + transform.right * xMin);
+
+            Debug.DrawLine(
+                transform.position + transform.forward * zMin - transform.right * xMin,
+                transform.position + transform.forward * zMin + transform.right * xMin);
+
+            if (lp.z > zMin && lp.z < zMax &&
+                lp.x > -xMin && lp.x < xMin)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public PID steerPID;
