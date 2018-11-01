@@ -30,4 +30,19 @@ public class Runway : MonoBehaviour
     {
 
     }
+
+    const float gizmoL = 3000;
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = inUse ? Color.red : Color.green;
+        Gizmos.DrawLine(
+            transform.TransformPoint(new Vector3(0, 0, -gizmoL)),
+            transform.TransformPoint(new Vector3(0, 0, gizmoL)));
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawLine(
+            transform.TransformPoint(new Vector3(taxiwayThreshold, 0, -gizmoL)),
+            transform.TransformPoint(new Vector3(taxiwayThreshold, 0, gizmoL)));
+    }
 }

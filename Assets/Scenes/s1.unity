@@ -318,6 +318,51 @@ Transform:
   m_Father: {fileID: 1999214731}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!1 &702426077
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 702426079}
+  - component: {fileID: 702426078}
+  m_Layer: 0
+  m_Name: Apron
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &702426078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 702426077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83574f5db593af644ae7d6a3d3b9a107, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runway: {fileID: 1212904779}
+  pushbackTurnOffset: -30
+  taxiwayColor: {r: 0, g: 0.83448267, b: 1, a: 0.534}
+  test_point: {x: 797.98, y: 0, z: 0}
+  test_offset: 0
+--- !u!4 &702426079
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 702426077}
+  m_LocalRotation: {x: -0, y: -0.7071072, z: -0, w: 0.7071065}
+  m_LocalPosition: {x: -206, y: 0, z: 118}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: -90.00001, z: 0}
 --- !u!1 &748094215
 GameObject:
   m_ObjectHideFlags: 0
@@ -389,7 +434,7 @@ Transform:
   m_Children:
   - {fileID: 1908981661}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &748094219
 MonoBehaviour:
@@ -479,7 +524,7 @@ Transform:
   m_LocalScale: {x: 1394.2062, y: 1394.2052, z: 1394.2052}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &820014782
 GameObject:
@@ -689,7 +734,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1212904778}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 887, y: 0, z: 80}
+  m_LocalPosition: {x: -0, y: 0, z: 395}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -809,6 +854,7 @@ MonoBehaviour:
   planePrefab: {fileID: 1696322853203190, guid: 8e42aafad7ac2954a8d8f455d1e0f6fb,
     type: 2}
   runway: {fileID: 1212904779}
+  apron: {fileID: 0}
   gates:
   - {fileID: 266852699}
   - {fileID: 550197257}
@@ -902,7 +948,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 143.34001, z: 0}
 --- !u!1 &1908981660
 GameObject:
@@ -1009,7 +1055,7 @@ Transform:
   - {fileID: 120652768}
   - {fileID: 647202712}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2005464539
 GameObject:

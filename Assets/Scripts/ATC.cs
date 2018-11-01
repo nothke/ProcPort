@@ -13,6 +13,7 @@ public class ATC : MonoBehaviour
 
     public GameObject planePrefab;
     public Runway runway;
+    public Apron apron;
 
     public List<Gate> gates = new List<Gate>();
 
@@ -279,23 +280,9 @@ public class ATC : MonoBehaviour
 
     public Color taxiwayColor;
 
+    /*
     private void OnDrawGizmos()
     {
-
-
-        if (runway)
-        {
-            Gizmos.color = runway.inUse ? Color.red : Color.green;
-            Gizmos.DrawLine(
-                new Vector3(-gizmoL, 0, runway.transform.position.z),
-                new Vector3(gizmoL, 0, runway.transform.position.z));
-
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawLine(
-                new Vector3(-gizmoL, 0, runway.transform.position.z + runway.taxiwayThreshold),
-                new Vector3(gizmoL, 0, runway.transform.position.z + runway.taxiwayThreshold));
-        }
-
         Gizmos.color = taxiwayColor;
         Gizmos.DrawLine(
             new Vector3(-gizmoL, 0, gateTaxiwayZ),
@@ -307,5 +294,5 @@ public class ATC : MonoBehaviour
                 new Vector3(i * runway.taxiwayDistance, 0, gateTaxiwayZ),
                 new Vector3(i * runway.taxiwayDistance, 0, runway.transform.position.z));
         }
-    }
+    }*/
 }

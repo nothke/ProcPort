@@ -4095,8 +4095,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   runway: {fileID: 0}
-  startAlt: 100
-  startX: 0
+  startAlt: 500
+  startAlongRunway: 0
   landingAngle: 10
   landingSpeed: 80
   landingAoA: 0

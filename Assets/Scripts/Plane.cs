@@ -6,18 +6,6 @@ public class Plane : MonoBehaviour
 {
 
 
-
-    //public float landingLength;
-    //public float progressSpeed;
-    //public float heightMult = 100;
-
-    void Start()
-    {
-        gizmoColor = Random.ColorHSV(0, 1, 0.8f, 0.8f, 1, 1);
-        pointHeight = Random.Range(1.0f, 2.0f);
-        StateChange();
-    }
-
     public enum State { Landing, TakingOff, TaxiingToGate, AtGate, TaxiingToRunway }
     public State state;
 
@@ -33,7 +21,7 @@ public class Plane : MonoBehaviour
 
     [Header("Landing")]
     public float startAlt = 100;
-    public float startX = 0;
+    public float startAlongRunway = 0;
     public float landingAngle = 3;
     public float landingSpeed = 10;
 
@@ -73,30 +61,42 @@ public class Plane : MonoBehaviour
     const float THROTTLE_SLOW_TAXI = 0.3f;
     const float THROTTLE_TAKEOFF = 1;
 
+    void Start()
+    {
+#if UNITY_EDITOR
+        gizmoColor = Random.ColorHSV(0, 1, 0.8f, 0.8f, 1, 1);
+        pointHeight = Random.Range(1.0f, 2.0f);
+#endif
+
+        StateChange();
+    }
+
     void StateChange()
     {
         switch (state)
         {
             case State.Landing:
                 // calculates position from slope and start altitude
-                float x = startX + startAlt * Mathf.Tan((90 - landingAngle) * Mathf.Deg2Rad);
-                transform.position = runway.transform.position + new Vector3(x, startAlt, 0);
+                float alongRunway = startAlongRunway - startAlt * Mathf.Tan((90 - landingAngle) * Mathf.Deg2Rad);
+                trackedPosition = runway.transform.TransformPoint(new Vector3(0, startAlt, alongRunway));
+                transform.position = trackedPosition;
+
                 break;
             case State.TakingOff:
                 onGround = true;
                 alreadyUnusedRunway = false;
+
                 break;
             case State.TaxiingToGate:
                 currentTarget = 0;
-                Debug.Log("WTF!");
-                transform.rotation = Random.rotation;// runway.transform.rotation;
+                transform.rotation = Random.rotation;
+
                 break;
             case State.AtGate:
 
                 break;
             case State.TaxiingToRunway:
                 currentTarget = 0;
-                //Debug.Log("Got points to runway");
                 isPushback = true;
                 gate.plane = null;
                 taxiwayPoints = ATC.e.GetTaxiwayToRunway(gate);
@@ -112,6 +112,9 @@ public class Plane : MonoBehaviour
     void SetPushbackPoint()
     {
         pushbackPoint = gate.transform.position;
+
+        // project point to apron taxiway
+
         pushbackPoint.z = ATC.e.gateTaxiwayZ;
         pushbackPoint.x += pushabackBlockerOffset;
     }
@@ -135,6 +138,8 @@ public class Plane : MonoBehaviour
     public float randomBankMult = 10;
 
     bool alreadyUnusedRunway;
+
+    Vector3 trackedPosition;
 
     Vector3 LandingFrw()
     {
@@ -169,29 +174,32 @@ public class Plane : MonoBehaviour
         // UPDATE
         if (state == State.Landing)
         {
-
-
             if (!runway)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            Vector3 veloDir = -Vector3.right;
+            Vector3 veloDir = runway.transform.forward;
+            Vector3 runwayForward = runway.transform.forward;
+            Vector3 runwayRight = runway.transform.right;
+
             float flareAltMult = 1.0f / flareBeginAlt;
             float veloFlareAltMult = 1.0f / veloFlareBeginAlt;
 
-            float zAdd = 0;
+            float sidewaysNoiseAdd = 0;
 
             if (!onGround)
             {
-                float zAddNoise = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
-                zAdd = Mathf.Lerp(0, zAddNoise, alt * 0.05f);
+                float sidewaysNoise = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
+                sidewaysNoiseAdd = Mathf.Lerp(0, sidewaysNoise, alt * 0.05f);
 
                 speed = landingSpeed;
 
                 float angle = Mathf.Lerp(touchdownAoA, landingAngle, alt * veloFlareAltMult);
-                veloDir = Quaternion.Euler(0, 0, angle) * -Vector3.right;
+
+                // direction dependent - solved
+                veloDir = Quaternion.AngleAxis(angle, runwayRight) * veloDir;
                 float flareT = Mathf.Clamp01(alt * flareAltMult);
                 //Debug.Log(flareT);
                 flare = Mathf.Lerp(flareMaximumAngle, landingAoA, flareT);
@@ -217,21 +225,19 @@ public class Plane : MonoBehaviour
 
             if (alt < 0 && !onGround)
             {
-                Vector3 v = transform.position;
-                v.y = 0;
-                transform.position = v;
+                trackedPosition.y = 0;
                 veloDir = -Vector3.right;
                 onGround = true;
                 //Debug.Log("They touch Martin!");
             }
             Vector3 frw = Quaternion.Euler(0, 0, flare) * runway.transform.forward;
 
-            Vector3 up = new Vector3(0, 1, zAdd * randomBankMult).normalized;
+            Vector3 up = new Vector3(0, 1, sidewaysNoiseAdd * randomBankMult).normalized;
             transform.rotation = Quaternion.LookRotation(frw, up);
-            transform.position += veloDir * speed * Time.deltaTime;
-            Vector3 p = transform.position;
-            p.z = runway.transform.position.z + zAdd * randomXMult;
-            transform.position = p;
+            trackedPosition += veloDir * speed * Time.deltaTime;
+
+            transform.position = trackedPosition + runwayRight * sidewaysNoiseAdd * randomXMult;
+
             if (onGround && speed <= runwayTaxiSpeed)
             {
                 // END
@@ -260,15 +266,17 @@ public class Plane : MonoBehaviour
                 return;
             }
 
-            Vector3 veloDir = Quaternion.Euler(0, 0, curAngle) * -Vector3.right;
+            Vector3 runwayForward = runway.transform.forward;
+            Vector3 runwayRight = runway.transform.right;
 
-            float zAddNoise = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
-            float zAdd = Mathf.Lerp(0, zAddNoise * takeOffNoiseMult, alt * 0.2f);
+            Vector3 veloDir = Quaternion.AngleAxis(curAngle, runwayRight) * runwayForward;
+
+            float sidewaysNoise = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
+            float sidewaysNoiseAdd = Mathf.Lerp(0, sidewaysNoise * takeOffNoiseMult, alt * 0.2f);
 
             if (onGround)
             {
                 speed += Time.deltaTime * speedUp;
-                //Debug.Log("Speedingup");
             }
 
             float absAngle = Mathf.Abs(curAngle);
@@ -278,7 +286,8 @@ public class Plane : MonoBehaviour
                 //if (curAngle < takeoffMaxAngle)
                 curAngle -= Time.deltaTime * takeOffAngleRate;
 
-                veloDir = Quaternion.Euler(0, 0, curAngle) * -Vector3.right;
+                // repeated!
+                veloDir = Quaternion.AngleAxis(curAngle, runwayRight) * runwayForward;
             }
 
             if (speed > startRotateAtSpeed && Mathf.Abs(flare) < Mathf.Abs(flareMaximumAngle))
@@ -293,15 +302,19 @@ public class Plane : MonoBehaviour
                 alreadyUnusedRunway = true;
             }
 
-            Vector3 frw = Quaternion.Euler(0, 0, flare) * veloDir;
+            //Vector3 frw = Quaternion.Euler(0, 0, flare) * veloDir;
+            Vector3 frw = Quaternion.AngleAxis(flare, runwayRight) * veloDir;
 
-            Vector3 up = new Vector3(0, 1, zAdd * randomBankMult).normalized;
+            Vector3 up = new Vector3(0, 1, sidewaysNoiseAdd * randomBankMult).normalized;
             transform.rotation = Quaternion.LookRotation(frw, up);
-            transform.position += veloDir * speed * Time.deltaTime;
+            trackedPosition += veloDir * speed * Time.deltaTime;
 
-            Vector3 p = transform.position;
-            p.z = runway.transform.position.z + zAdd * randomXMult;
-            transform.position = p;
+            //Vector3 p = transform.position;
+            //p.z = runway.transform.position.z + sidewaysNoiseAdd * randomXMult;
+            //transform.position = p;
+            trackedPosition += runwayRight * sidewaysNoiseAdd * randomXMult;
+
+            transform.position = trackedPosition;
 
             if (alt > 500)
             {
