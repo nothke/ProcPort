@@ -4110,7 +4110,7 @@ MonoBehaviour:
   runwayTaxiSpeed: 12
   pushBackSpeed: 5
   gateTaxiSpeed: 5
-  gateSlowdownRange: 160
+  gateSlowdownRange: 65
   afterPushbackWait: 15
   pushbackTurnOffset: -30
   pushbackTurnRate: 10

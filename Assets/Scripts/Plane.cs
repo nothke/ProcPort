@@ -111,12 +111,8 @@ public class Plane : MonoBehaviour
 
     void SetPushbackPoint()
     {
-        pushbackPoint = gate.transform.position;
-
-        // project point to apron taxiway
-
-        pushbackPoint.z = ATC.e.gateTaxiwayZ;
-        pushbackPoint.x += pushabackBlockerOffset;
+        pushbackPoint = ATC.e.apron.GetGateApronPoint(gate);
+        pushbackPoint -= ATC.e.apron.transform.forward * pushabackBlockerOffset;
     }
 
     public Gate gate;
@@ -162,6 +158,8 @@ public class Plane : MonoBehaviour
     {
         hasRunwayClearance = true;
     }
+
+    bool slowingDownForGate;
 
     void Update()
     {
@@ -330,7 +328,7 @@ public class Plane : MonoBehaviour
 
             if (taxiwayPoints == null)
             {
-                speed -= Time.deltaTime * 1;
+                speed -= Time.deltaTime * 0.75f;
                 speed = Mathf.Clamp(speed, 0, runwayTaxiSpeed);
 
                 if (speed == 0)
@@ -351,9 +349,12 @@ public class Plane : MonoBehaviour
                 else
                     SteerTowards(gate.transform.forward, 10);
 
-                float distToGate = Vector3.Distance(gate.transform.position, transform.position);
+                float distToGate = Vector3.Distance(taxiwayPoints[2], transform.position);
 
-                if (distToGate < gateSlowdownRange)
+                if (distToGate < gateSlowdownRange && !slowingDownForGate)
+                    slowingDownForGate = true;
+
+                if (slowingDownForGate)
                 {
                     speed -= Time.deltaTime * 2;
                     speed = Mathf.Clamp(speed, gateTaxiSpeed, runwayTaxiSpeed);
@@ -401,7 +402,8 @@ public class Plane : MonoBehaviour
             // pushback
             if (isPushback)
             {
-                bool beforeTurn = transform.position.z < ATC.e.gateTaxiwayZ + pushbackTurnOffset;
+                bool beforeTurn = !ATC.e.apron.IsPastPushbackTurnPoint(transform.position);
+                //transform.position.z < ATC.e.gateTaxiwayZ + pushbackTurnOffset;
 
                 if (beforeTurn)
                 {
@@ -412,28 +414,28 @@ public class Plane : MonoBehaviour
                 {
                     throttle = THROTTLE_SLOW_TAXI;
 
-                    float currentAngle = Vector3.SignedAngle(transform.forward, -runway.transform.forward, Vector3.up);
-                    //Debug.Log(currentAngle);
+                    float currentAngle = Vector3.SignedAngle(transform.forward, -ATC.e.apron.transform.forward, Vector3.up);
+                    Debug.Log(currentAngle);
 
                     // pushback turn
-                    SteerTowards(Vector3.right, pushbackTurnRate);
+                    SteerTowards(-ATC.e.apron.transform.forward, pushbackTurnRate);
 
-                    if (currentAngle < -5)
-                    {
-                        speed += -Time.deltaTime * 2;
-                        speed = Mathf.Clamp(speed, -pushBackSpeed, 0);
-                    }
-                    else
+                    if (currentAngle > -2 && currentAngle < 2)
                     {
                         isPushback = false;
                         pushbackEndedTime = Time.time;
+                    }
+                    else
+                    {
+                        speed += -Time.deltaTime * 2;
+                        speed = Mathf.Clamp(speed, -pushBackSpeed, 0);
                     }
                 }
             }
             else
             {
                 // Wait for runway to be free
-                if (transform.position.z > runway.GetThreshold() - 20 && !hasRunwayClearance)
+                if (runway.IsPointPastThreshold(transform.position, -20) && !hasRunwayClearance)
                 {
                     if (!requestSent)
                         SendTakeoffRequest();

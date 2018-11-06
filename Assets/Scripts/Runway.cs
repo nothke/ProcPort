@@ -10,25 +10,10 @@ public class Runway : MonoBehaviour
 
     public bool inUse;
 
-    public float GetTaxiwayZ()
+    public bool IsPointPastThreshold(Vector3 inputPoint, float offset)
     {
-        return transform.position.z + taxiwayDistance;
-    }
-
-    public float GetThreshold()
-    {
-        return transform.position.z + taxiwayThreshold;
-    }
-
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        Vector3 local = transform.InverseTransformPoint(inputPoint);
+        return local.x > taxiwayThreshold + offset;
     }
 
     const float gizmoL = 3000;

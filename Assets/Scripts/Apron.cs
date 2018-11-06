@@ -20,14 +20,34 @@ public class Apron : MonoBehaviour
         return x > pushbackTurnOffset;
     }
 
-    Vector3 GetApronTaxiwayPoint(Vector3 inputPosition, int offset)
+    public Vector3 GetGateApronPoint(Gate gate)
+    {
+        Vector2 point;
+
+        Vector2 p1 = new Vector2(gate.transform.position.x, gate.transform.position.z);
+        Vector2 p2 = new Vector2(
+            (gate.transform.position + gate.transform.forward * 10).x,
+            (gate.transform.position + gate.transform.forward * 10).z);
+
+        Vector3 p3 = new Vector2(transform.position.x, transform.position.z);
+        Vector2 p4 = new Vector2(
+            (transform.position + transform.forward * 10).x,
+            (transform.position + transform.forward * 10).z);
+
+        Vector2Utils.LineIntersection(p1, p2, p3, p4, out point);
+
+        Vector3 p = new Vector3(point.x, 0, point.y);
+        return p;
+    }
+
+    public Vector3 GetApronTaxiwayPoint(Vector3 inputPosition, int offset)
     {
         float taxiZ = GetLocalZ(inputPosition, offset);
 
         return transform.TransformPoint(new Vector3(0, 0, taxiZ));
     }
 
-    Vector3 GetRunwayTaxiwayPoint(Vector3 inputPosition, int offset)
+    public Vector3 GetRunwayTaxiwayPoint(Vector3 inputPosition, int offset)
     {
         float taxiZ = GetLocalZ(inputPosition, offset);
 

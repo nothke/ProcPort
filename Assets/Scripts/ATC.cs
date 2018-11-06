@@ -233,19 +233,29 @@ public class ATC : MonoBehaviour
             return null;
         }
 
+        /*
         int index;
         if (inputFrw.x < 0)
             index = Mathf.FloorToInt(inputPos.x / runway.taxiwayDistance);
         else
             index = Mathf.CeilToInt(inputPos.x / runway.taxiwayDistance);
+            
 
         //Debug.Log("Using taxiway: " + index);
 
         float taxix = index * runway.taxiwayDistance;
+        */
 
-        Vector3 p0 = new Vector3(taxix, 0, runway.transform.position.z);
-        Vector3 p1 = new Vector3(taxix, 0, gateTaxiwayZ);
-        Vector3 p2 = new Vector3(gate.transform.position.x, 0, gateTaxiwayZ);
+        // direction dependent
+        int offset = inputFrw.x < 0 ? 0 : 1;
+
+        // runway point
+        Vector3 p0 = apron.GetRunwayTaxiwayPoint(inputPos, offset);
+        // apron point from runway
+        Vector3 p1 = apron.GetApronTaxiwayPoint(inputPos, offset);
+        // apron point from gate
+        Vector3 p2 = apron.GetGateApronPoint(gate);
+        // gate
         Vector3 p3 = new Vector3(gate.transform.position.x, 0, gate.transform.position.z);
 
         Vector3[] taxiwayPoints = new Vector3[] { p0, p1, p2, p3 };
@@ -253,23 +263,23 @@ public class ATC : MonoBehaviour
         return taxiwayPoints;
     }
 
-
-
     public Vector3[] GetTaxiwayToRunway(Gate gate)
     {
-        Vector3 pos = gate.transform.position;
+        Vector3 inputPos = gate.transform.position;
 
-        int index;
-        index = Mathf.CeilToInt(pos.x / runway.taxiwayDistance) + 1;
+        //int index;
+        //index = Mathf.CeilToInt(inputPos.x / runway.taxiwayDistance) + 1;
 
         //Debug.Log(index);
 
-        float taxix = index * runway.taxiwayDistance;
+        //float taxix = index * runway.taxiwayDistance;
 
-        Vector3 p0 = new Vector3(gate.transform.position.x, 0, gateTaxiwayZ);
-        Vector3 p1 = new Vector3(taxix, 0, gateTaxiwayZ);
-        Vector3 p2 = new Vector3(taxix, 0, runway.transform.position.z);
-        Vector3 p3 = new Vector3(taxix - 80, 0, runway.transform.position.z);
+        Vector3 apronPos = gate.transform.position - apron.transform.forward * 500;
+
+        Vector3 p0 = apron.GetGateApronPoint(gate);
+        Vector3 p1 = apron.GetApronTaxiwayPoint(apronPos, 0);// new Vector3(taxix, 0, gateTaxiwayZ);
+        Vector3 p2 = apron.GetRunwayTaxiwayPoint(apronPos, 0);// new Vector3(taxix, 0, runway.transform.position.z);
+        Vector3 p3 = p2 + runway.transform.forward * 80;
 
         Vector3[] taxiwayPoints = new Vector3[] { p0, p1, p2, p3 };
 
@@ -279,20 +289,4 @@ public class ATC : MonoBehaviour
     const float gizmoL = 5000;
 
     public Color taxiwayColor;
-
-    /*
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = taxiwayColor;
-        Gizmos.DrawLine(
-            new Vector3(-gizmoL, 0, gateTaxiwayZ),
-            new Vector3(gizmoL, 0, gateTaxiwayZ));
-
-        for (int i = -10; i < 10; i++)
-        {
-            Gizmos.DrawLine(
-                new Vector3(i * runway.taxiwayDistance, 0, gateTaxiwayZ),
-                new Vector3(i * runway.taxiwayDistance, 0, runway.transform.position.z));
-        }
-    }*/
 }
