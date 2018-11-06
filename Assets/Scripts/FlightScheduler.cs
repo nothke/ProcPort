@@ -50,7 +50,17 @@ public class Flight
         return plane.name;
     }
 
-    public Plane plane;
+    public Plane plane { get; private set; }
+    public void SetPlane(Plane p)
+    {
+        if (plane != null)
+        {
+            Debug.LogError("The plane has already been set to this flight, one flight can have only one plane!");
+            return;
+        }
+
+        plane = p;
+    }
 }
 
 public class FlightScheduler : MonoBehaviour
@@ -63,8 +73,10 @@ public class FlightScheduler : MonoBehaviour
     {
         //ScheduleRandomArrivingFlight(0);
 
-        BenchmarkOvercrowded();
+        //BenchmarkOvercrowded();
         //BenchmarkScheduleMany(20);
+
+        ScheduleFlightAtGate(10);
 
         SortFlightsByArrivalTime();
     }
@@ -90,6 +102,21 @@ public class FlightScheduler : MonoBehaviour
         Flight flight = CreateRandomFlight();
         flight.arrivalTime = Time.time + inTime + Random.Range(5, 20);
         flight.departureTime = Time.time + inTime + Random.Range(500, 700);
+    }
+
+    void ScheduleFlightAtGate(float timeToDeparture)
+    {
+        Flight flight = CreateRandomFlight();
+        flight.arrivalTime = 0;
+        flight.departureTime = Time.time + timeToDeparture;
+
+        flight.progress = Flight.Progress.GoToGate;
+
+        Plane plane = atc.CreatePlane();
+        Gate gate = atc.GetFreeGate();
+        plane.PlaceAtGate(gate);
+
+        flight.SetPlane(plane);
     }
 
     Flight CreateRandomFlight()
@@ -120,7 +147,7 @@ public class FlightScheduler : MonoBehaviour
                     }
 
                     Plane plane = atc.CreatePlane();
-                    flights[i].plane = plane;
+                    flights[i].SetPlane(plane);
                     plane.gameObject.SetActive(false);
 
                     atc.SubmitPlaneForLanding(plane);

@@ -61,6 +61,16 @@ public class Plane : MonoBehaviour
     const float THROTTLE_SLOW_TAXI = 0.3f;
     const float THROTTLE_TAKEOFF = 1;
 
+    public void PlaceAtGate(Gate gate)
+    {
+        state = State.AtGate;
+        this.gate = gate;
+
+        speed = 0;
+        transform.position = gate.transform.position;
+        transform.rotation = gate.transform.rotation;
+    }
+
     void Start()
     {
 #if UNITY_EDITOR
@@ -73,6 +83,8 @@ public class Plane : MonoBehaviour
 
     void StateChange()
     {
+        Debug.Log("State changed");
+
         switch (state)
         {
             case State.Landing:
@@ -83,8 +95,10 @@ public class Plane : MonoBehaviour
 
                 break;
             case State.TakingOff:
+                Debug.Log(name + " has starting taking off");
                 onGround = true;
                 alreadyUnusedRunway = false;
+                trackedPosition = transform.position;
 
                 break;
             case State.TaxiingToGate:
@@ -108,6 +122,7 @@ public class Plane : MonoBehaviour
                 break;
         }
     }
+
 
     void SetPushbackPoint()
     {
@@ -166,6 +181,8 @@ public class Plane : MonoBehaviour
         // ON CHANGE
         if (state != lastState)
             StateChange();
+
+        lastState = state;
 
         float alt = transform.position.y;
 
@@ -415,7 +432,7 @@ public class Plane : MonoBehaviour
                     throttle = THROTTLE_SLOW_TAXI;
 
                     float currentAngle = Vector3.SignedAngle(transform.forward, -ATC.e.apron.transform.forward, Vector3.up);
-                    Debug.Log(currentAngle);
+                    //Debug.Log(currentAngle);
 
                     // pushback turn
                     SteerTowards(-ATC.e.apron.transform.forward, pushbackTurnRate);
@@ -517,7 +534,6 @@ public class Plane : MonoBehaviour
 
         //progress += Time.deltaTime * progressSpeed * speedCurve.Evaluate(progress);
 
-        lastState = state;
     }
 
     public float turnSpeed = 1;
