@@ -187,7 +187,7 @@ namespace Nothke.ProcPort
 
             lastState = state;
 
-            float alt = transform.position.y;
+            float alt = transform.position.y - runway.transform.position.y;
 
             // UPDATE
             if (state == State.Landing)
@@ -201,6 +201,8 @@ namespace Nothke.ProcPort
                 Vector3 veloDir = runway.transform.forward;
                 Vector3 runwayForward = runway.transform.forward;
                 Vector3 runwayRight = runway.transform.right;
+
+                float runwayHeight = runway.transform.position.y;
 
                 float flareAltMult = 1.0f / flareBeginAlt;
                 float veloFlareAltMult = 1.0f / veloFlareBeginAlt;
@@ -218,13 +220,15 @@ namespace Nothke.ProcPort
 
                     // direction dependent - solved
                     veloDir = Quaternion.AngleAxis(angle, runwayRight) * veloDir;
+
+
                     float flareT = Mathf.Clamp01(alt * flareAltMult);
                     //Debug.Log(flareT);
                     flare = Mathf.Lerp(flareMaximumAngle, landingAoA, flareT);
 
                     throttle = THROTTLE_LANDING;
                 }
-                else
+                else // on ground
                 {
                     if (speed > runwayTaxiSpeed)
                     {
@@ -244,7 +248,7 @@ namespace Nothke.ProcPort
                 // Touching down
                 if (alt < 0 && !onGround)
                 {
-                    trackedPosition.y = 0;
+                    trackedPosition.y = runwayHeight;
                     onGround = true;
                     //Debug.Log("They touch Martin!");
                 }
@@ -262,7 +266,7 @@ namespace Nothke.ProcPort
                     // END
                     speed = runwayTaxiSpeed;
 
-                    transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+                    transform.position = new Vector3(transform.position.x, runwayHeight, transform.position.z);
                     transform.rotation = runway.transform.rotation;
 
                     state = State.TaxiingToGate;
@@ -405,7 +409,9 @@ namespace Nothke.ProcPort
                     // free runway
                     if (runway && runway.inUse && !alreadyUnusedRunway)
                     {
-                        if (transform.position.z < runway.transform.position.z + runway.taxiwayThreshold)
+                        // if passed through threshold
+                        float offRunway = runway.transform.InverseTransformPoint(transform.position).x;
+                        if (Mathf.Abs(offRunway) > Mathf.Abs(runway.taxiwayThreshold))
                         {
                             runway.inUse = false;
                             alreadyUnusedRunway = true;
