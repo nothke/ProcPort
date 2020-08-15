@@ -29,7 +29,7 @@ public class Apron : MonoBehaviour
             (gate.transform.position + gate.transform.forward * 10).x,
             (gate.transform.position + gate.transform.forward * 10).z);
 
-        Vector3 p3 = new Vector2(transform.position.x, transform.position.z);
+        Vector2 p3 = new Vector2(transform.position.x, transform.position.z);
         Vector2 p4 = new Vector2(
             (transform.position + transform.forward * 10).x,
             (transform.position + transform.forward * 10).z);
@@ -62,7 +62,7 @@ public class Apron : MonoBehaviour
         Vector3 taxiwayPointOnApron = GetRoundedPointOnApron(pointOnApron, offset);
         Debug.DrawRay(taxiwayPointOnApron, Vector3.up * 200, Color.yellow);
 
-        runwayPoint = transform.InverseTransformPoint(taxiwayPointOnApron);
+        runwayPoint = runway.transform.InverseTransformPoint(taxiwayPointOnApron);
         runwayPoint.x = 0;
 
         apronPoint = taxiwayPointOnApron;
@@ -79,17 +79,9 @@ public class Apron : MonoBehaviour
         Vector2 apronDir = new Vector2(transform.forward.x, transform.forward.z);
 
         Vector2 intersection = Vector2.zero;
-        RayRayIntersection(inPos, inDir, apronPos, apronDir, ref intersection);
+        Vector2Utils.RayRayIntersection(inPos, inDir, apronPos, apronDir, ref intersection);
 
         return new Vector3(intersection.x, 0, intersection.y);
-    }
-
-    float GetLocalRunwayZ(Vector3 inputPosition)
-    {
-        Vector3 localInput = runway.transform.InverseTransformPoint(inputPosition);
-        float inputZ = localInput.z;
-
-        return inputZ;
     }
 
     Vector3 GetRoundedPointOnApron(Vector3 inputPosition, int offset)
@@ -135,7 +127,7 @@ public class Apron : MonoBehaviour
                 Gizmos.DrawLine(apronPoint, runwayPoint);
             }
 
-            // temp test
+            /* temp test
             Gizmos.color = Color.white;
             Gizmos.DrawSphere(test_point, 50);
             GetTaxiwayPointsFromRunway(test_point, test_offset, out Vector3 test_runwayPoint, out Vector3 test_apronPoint);
@@ -143,30 +135,9 @@ public class Apron : MonoBehaviour
             Gizmos.DrawSphere(test_runwayPoint, 50);
             Gizmos.color = Color.yellow;
             Gizmos.DrawSphere(test_apronPoint, 50);
-            //Gizmos.DrawSphere(GetApronTaxiwayPoint(test_point, test_offset), 50);
-            //Gizmos.DrawSphere(GetTaxiwayPointsFromRunway(test_point, test_offset), 50);
+            */
         }
     }
 
-    public static bool RayRayIntersection(Vector2 apos, Vector2 adir, Vector2 bpos, Vector2 bdir, ref Vector2 intersection)
-    {
-        var PQx = bpos.x - apos.x;
-        var PQy = bpos.y - apos.y;
-        var rx = adir.x;
-        var ry = adir.y;
-        var rxt = -ry;
-        var ryt = rx;
-        var qx = PQx * rx + PQy * ry;
-        var qy = PQx * rxt + PQy * ryt;
-        var sx = bdir.x * rx + bdir.y * ry;
-        var sy = bdir.x * rxt + bdir.y * ryt;
 
-        // if lines are identical or do not cross...
-        if (sy == 0) return false;
-
-        var a = qx - qy * sx / sy;
-        intersection = new Vector2(apos.x + a * rx, apos.y + a * ry);
-
-        return true;
-    }
 }

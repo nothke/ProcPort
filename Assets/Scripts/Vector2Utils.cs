@@ -24,4 +24,26 @@ public static class Vector2Utils
 
         return true;
     }
+
+    public static bool RayRayIntersection(Vector2 apos, Vector2 adir, Vector2 bpos, Vector2 bdir, ref Vector2 intersection)
+    {
+        var PQx = bpos.x - apos.x;
+        var PQy = bpos.y - apos.y;
+        var rx = adir.x;
+        var ry = adir.y;
+        var rxt = -ry;
+        var ryt = rx;
+        var qx = PQx * rx + PQy * ry;
+        var qy = PQx * rxt + PQy * ryt;
+        var sx = bdir.x * rx + bdir.y * ry;
+        var sy = bdir.x * rxt + bdir.y * ryt;
+
+        // if lines are identical or do not cross...
+        if (sy == 0) return false;
+
+        var a = qx - qy * sx / sy;
+        intersection = new Vector2(apos.x + a * rx, apos.y + a * ry);
+
+        return true;
+    }
 }
