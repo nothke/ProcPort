@@ -208,7 +208,7 @@ public class Plane : MonoBehaviour
             if (!onGround)
             {
                 float sidewaysNoise = (-0.5f + Mathf.PerlinNoise(52.223f, alt * randomFreq));
-                sidewaysNoiseAdd = Mathf.Lerp(0, sidewaysNoise, alt * 0.05f);
+                sidewaysNoiseAdd = Mathf.Lerp(0, sidewaysNoise, alt * 0.2f);
 
                 speed = landingSpeed;
 
@@ -237,12 +237,18 @@ public class Plane : MonoBehaviour
                 }
 
                 throttle = THROTTLE_REVERSETHRUST;
+
+                // Make sure we are on centerline?
+                //Vector3 localRunwayPoint = runway.transform.InverseTransformPoint(transform.position);
+                //localRunwayPoint.x = 0;
+                //Vector3 runwayPoint = runway.transform.TransformPoint(localRunwayPoint);
+                //transform.position = runwayPoint;
             }
 
+            // Touching down
             if (alt < 0 && !onGround)
             {
                 trackedPosition.y = 0;
-                veloDir = -Vector3.right;
                 onGround = true;
                 //Debug.Log("They touch Martin!");
             }
@@ -254,6 +260,7 @@ public class Plane : MonoBehaviour
 
             transform.position = trackedPosition + runwayRight * sidewaysNoiseAdd * randomXMult;
 
+            // When slowed down to taxi speed
             if (onGround && speed <= runwayTaxiSpeed)
             {
                 // END

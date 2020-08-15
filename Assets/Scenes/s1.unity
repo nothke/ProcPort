@@ -364,8 +364,8 @@ MonoBehaviour:
   runway: {fileID: 1212904779}
   pushbackTurnOffset: -30
   taxiwayColor: {r: 0, g: 0.83448267, b: 1, a: 0.534}
-  test_point: {x: 797.98, y: 0, z: 0}
-  test_offset: 0
+  test_point: {x: -671.2, y: 0, z: 196}
+  test_offset: 1
 --- !u!4 &702426079
 Transform:
   m_ObjectHideFlags: 0
