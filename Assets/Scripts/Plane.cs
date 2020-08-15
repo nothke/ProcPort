@@ -237,12 +237,6 @@ public class Plane : MonoBehaviour
                 }
 
                 throttle = THROTTLE_REVERSETHRUST;
-
-                // Make sure we are on centerline?
-                //Vector3 localRunwayPoint = runway.transform.InverseTransformPoint(transform.position);
-                //localRunwayPoint.x = 0;
-                //Vector3 runwayPoint = runway.transform.TransformPoint(localRunwayPoint);
-                //transform.position = runwayPoint;
             }
 
             // Touching down
@@ -411,10 +405,8 @@ public class Plane : MonoBehaviour
                 {
                     if (transform.position.z < runway.transform.position.z + runway.taxiwayThreshold)
                     {
-                        //Debug.Log("Freeing runway", gameObject);
                         runway.inUse = false;
                         alreadyUnusedRunway = true;
-                        //runway = null;
                     }
                 }
             }
@@ -510,37 +502,11 @@ public class Plane : MonoBehaviour
             }
 
             transform.position += transform.forward * speed * Time.deltaTime;
-
-            /*
-            float steerSign = Mathf.Sign(steerAngle - steerTarget);
-            steerRate += steerSign * Time.deltaTime;
-            steerRate = Mathf.Clamp(steerRate, -5, 5);
-            steerAngle = steerRate;
-            transform.forward = Quaternion.Euler(0, steerAngle, 0) * transform.forward;
-            */
-
-            //steerTarget = steerRate;
-
-            // occupy runway
-            /*
-            if (runway && runway.inUse)
-            {
-                if (transform.position.z < runway.transform.position.z + runway.taxiwayThreshold)
-                {
-                    Debug.Log("Freeing runway", gameObject);
-                    runway.inUse = false;
-                    runway = null;
-                }
-            }*/
         }
         else if (state == State.AtGate)
         {
 
         }
-
-
-        //progress += Time.deltaTime * progressSpeed * speedCurve.Evaluate(progress);
-
     }
 
     public float turnSpeed = 1;
@@ -667,11 +633,5 @@ public class Plane : MonoBehaviour
                 Gizmos.DrawLine(p1, p2);
             }
         }
-
-        /*
-        if (gate && state == State.TaxiingToGate)
-        {
-            Gizmos.DrawWireSphere(gate.transform.position, gateSlowdownRange);
-        }*/
     }
 }

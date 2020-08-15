@@ -13,7 +13,7 @@ public class Test_LineIntersection : MonoBehaviour
         //To2D(transform.position), To2D(transform.forward),
         //To2D(other.position), To2D(other.forward), ref intersection);
 
-        Apron.RayRayIntersection(To2D(transform.position), To2D(transform.forward),
+        Vector2Utils.RayRayIntersection(To2D(transform.position), To2D(transform.forward),
             To2D(other.position), To2D(other.forward), ref intersection);
 
         Gizmos.DrawLine(transform.position - transform.forward * 1000,

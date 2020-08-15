@@ -233,19 +233,6 @@ public class ATC : MonoBehaviour
             return null;
         }
 
-        /*
-        int index;
-        if (inputFrw.x < 0)
-            index = Mathf.FloorToInt(inputPos.x / runway.taxiwayDistance);
-        else
-            index = Mathf.CeilToInt(inputPos.x / runway.taxiwayDistance);
-            
-
-        //Debug.Log("Using taxiway: " + index);
-
-        float taxix = index * runway.taxiwayDistance;
-        */
-
         // direction dependent
         int offset = inputFrw.x < 0 ? 0 : 1;
 
