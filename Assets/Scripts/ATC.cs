@@ -249,10 +249,10 @@ public class ATC : MonoBehaviour
         // direction dependent
         int offset = inputFrw.x < 0 ? 0 : 1;
 
-        // runway point
-        Vector3 p0 = apron.GetRunwayTaxiwayPoint(inputPos, offset);
-        // apron point from runway
-        Vector3 p1 = apron.GetApronTaxiwayPoint(inputPos, offset);
+        // Get point on runway and apron
+        apron.GetTaxiwayPointsFromRunway(inputPos, offset,
+            out Vector3 p0, out Vector3 p1);
+
         // apron point from gate
         Vector3 p2 = apron.GetGateApronPoint(gate);
         // gate
@@ -278,7 +278,7 @@ public class ATC : MonoBehaviour
 
         Vector3 p0 = apron.GetGateApronPoint(gate);
         Vector3 p1 = apron.GetApronTaxiwayPoint(apronPos, 0);// new Vector3(taxix, 0, gateTaxiwayZ);
-        Vector3 p2 = apron.GetRunwayTaxiwayPoint(apronPos, 0);// new Vector3(taxix, 0, runway.transform.position.z);
+        Vector3 p2 = apron.GetRunwayPointFromApron(apronPos, 0);// new Vector3(taxix, 0, runway.transform.position.z);
         Vector3 p3 = p2 + runway.transform.forward * 80;
 
         Vector3[] taxiwayPoints = new Vector3[] { p0, p1, p2, p3 };

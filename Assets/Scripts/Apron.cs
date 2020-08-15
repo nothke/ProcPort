@@ -42,20 +42,60 @@ public class Apron : MonoBehaviour
 
     public Vector3 GetApronTaxiwayPoint(Vector3 inputPosition, int offset)
     {
-        float taxiZ = GetLocalZ(inputPosition, offset);
-
-        return transform.TransformPoint(new Vector3(0, 0, taxiZ));
+        return GetRoundedPointOnApron(inputPosition, offset);
     }
 
-    public Vector3 GetRunwayTaxiwayPoint(Vector3 inputPosition, int offset)
+    public Vector3 GetRunwayPointFromApron(Vector3 inputPosition, int offset)
     {
-        float taxiZ = GetLocalZ(inputPosition, offset);
-
-        //Vector3 runwayPoint = transform.TransformPoint(new Vector3(0, 0, taxiZ));
-        Vector3 apronPoint = transform.TransformPoint(new Vector3(0, 0, taxiZ));
+        Vector3 apronPoint = GetRoundedPointOnApron(inputPosition, offset);
         Vector3 runwayPoint = runway.transform.InverseTransformPoint(apronPoint);
         runwayPoint.x = 0;
         return runway.transform.TransformPoint(runwayPoint);
+    }
+
+    public void GetTaxiwayPointsFromRunway(Vector3 inputPosition, int offset,
+        out Vector3 runwayPoint, out Vector3 apronPoint)
+    {
+        Vector3 pointOnApron = ProjectRunwayPointToApron(inputPosition);
+        Debug.DrawRay(pointOnApron, Vector3.up * 100);
+
+        Vector3 taxiwayPointOnApron = GetRoundedPointOnApron(pointOnApron, offset);
+        Debug.DrawRay(taxiwayPointOnApron, Vector3.up * 200, Color.yellow);
+
+        runwayPoint = transform.InverseTransformPoint(taxiwayPointOnApron);
+        runwayPoint.x = 0;
+
+        apronPoint = taxiwayPointOnApron;
+        runwayPoint = runway.transform.TransformPoint(runwayPoint);
+    }
+
+    Vector3 ProjectRunwayPointToApron(Vector3 input)
+    {
+        Vector2 inPos = new Vector2(input.x, input.z);
+        Vector3 runDir = runway.transform.forward;
+        Vector2 inDir = new Vector2(-runDir.z, runDir.x);
+
+        Vector2 apronPos = new Vector2(transform.position.x, transform.position.z);
+        Vector2 apronDir = new Vector2(transform.forward.x, transform.forward.z);
+
+        Vector2 intersection = Vector2.zero;
+        RayRayIntersection(inPos, inDir, apronPos, apronDir, ref intersection);
+
+        return new Vector3(intersection.x, 0, intersection.y);
+    }
+
+    float GetLocalRunwayZ(Vector3 inputPosition)
+    {
+        Vector3 localInput = runway.transform.InverseTransformPoint(inputPosition);
+        float inputZ = localInput.z;
+
+        return inputZ;
+    }
+
+    Vector3 GetRoundedPointOnApron(Vector3 inputPosition, int offset)
+    {
+        float inputZ = GetLocalZ(inputPosition, offset);
+        return transform.TransformPoint(0, 0, inputZ);
     }
 
     float GetLocalZ(Vector3 inputPosition, int offset)
@@ -98,8 +138,35 @@ public class Apron : MonoBehaviour
             // temp test
             Gizmos.color = Color.white;
             Gizmos.DrawSphere(test_point, 50);
-            Gizmos.DrawSphere(GetApronTaxiwayPoint(test_point, test_offset), 50);
-            Gizmos.DrawSphere(GetRunwayTaxiwayPoint(test_point, test_offset), 50);
+            GetTaxiwayPointsFromRunway(test_point, test_offset, out Vector3 test_runwayPoint, out Vector3 test_apronPoint);
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(test_runwayPoint, 50);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(test_apronPoint, 50);
+            //Gizmos.DrawSphere(GetApronTaxiwayPoint(test_point, test_offset), 50);
+            //Gizmos.DrawSphere(GetTaxiwayPointsFromRunway(test_point, test_offset), 50);
         }
+    }
+
+    public static bool RayRayIntersection(Vector2 apos, Vector2 adir, Vector2 bpos, Vector2 bdir, ref Vector2 intersection)
+    {
+        var PQx = bpos.x - apos.x;
+        var PQy = bpos.y - apos.y;
+        var rx = adir.x;
+        var ry = adir.y;
+        var rxt = -ry;
+        var ryt = rx;
+        var qx = PQx * rx + PQy * ry;
+        var qy = PQx * rxt + PQy * ryt;
+        var sx = bdir.x * rx + bdir.y * ry;
+        var sy = bdir.x * rxt + bdir.y * ryt;
+
+        // if lines are identical or do not cross...
+        if (sy == 0) return false;
+
+        var a = qx - qy * sx / sy;
+        intersection = new Vector2(apos.x + a * rx, apos.y + a * ry);
+
+        return true;
     }
 }

@@ -73,10 +73,10 @@ public class FlightScheduler : MonoBehaviour
     {
         //ScheduleRandomArrivingFlight(0);
 
-        //BenchmarkOvercrowded();
+        BenchmarkOvercrowded();
         //BenchmarkScheduleMany(20);
 
-        ScheduleFlightAtGate(10);
+        //ScheduleFlightAtGate(10);
 
         SortFlightsByArrivalTime();
     }
