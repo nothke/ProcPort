@@ -135,11 +135,6 @@ namespace Nothke.ProcPort
 
         public Gate gate;
 
-        float spawnTime;
-
-        public AnimationCurve flareAngleCurve;
-        public float flareAngleHeightMult = 0.2f;
-        float touchdownTime;
         bool onGround;
 
         float flare;
@@ -221,9 +216,7 @@ namespace Nothke.ProcPort
                     // direction dependent - solved
                     veloDir = Quaternion.AngleAxis(angle, runwayRight) * veloDir;
 
-
                     float flareT = Mathf.Clamp01(alt * flareAltMult);
-                    //Debug.Log(flareT);
                     flare = Mathf.Lerp(flareMaximumAngle, landingAoA, flareT);
 
                     throttle = THROTTLE_LANDING;
@@ -252,7 +245,8 @@ namespace Nothke.ProcPort
                     onGround = true;
                     //Debug.Log("They touch Martin!");
                 }
-                Vector3 frw = Quaternion.Euler(0, 0, flare) * runway.transform.forward;
+
+                Vector3 frw = Quaternion.AngleAxis(flare, runwayRight) * runwayForward;
 
                 Vector3 up = new Vector3(0, 1, sidewaysNoiseAdd * randomBankMult).normalized;
                 transform.rotation = Quaternion.LookRotation(frw, up);
@@ -624,18 +618,19 @@ namespace Nothke.ProcPort
             if (taxiwayPoints != null && taxiwayPoints.Length != 0)
             {
                 Gizmos.color = gizmoColor;
+                float h = transform.position.y + pointHeight;
 
                 Vector3 pt1 = transform.position;
                 Vector3 pt2 = taxiwayPoints[currentTarget];
-                pt2.y = pointHeight;
+                pt2.y = h;
                 Gizmos.DrawLine(pt1, pt2);
 
                 for (int i = currentTarget; i < taxiwayPoints.Length - 1; i++)
                 {
                     Vector3 p1 = taxiwayPoints[i];
-                    p1.y = pointHeight;
+                    p1.y = h;
                     Vector3 p2 = taxiwayPoints[i + 1];
-                    p2.y = pointHeight;
+                    p2.y = h;
 
                     //Gizmos.DrawWireSphere(taxiwayPoints[i], validationDistance);
                     Gizmos.DrawLine(p1, p2);
