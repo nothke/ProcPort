@@ -2,28 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlaneSounds : MonoBehaviour
+namespace Nothke.ProcPort
 {
-    public Plane plane;
-    public AudioSource jet;
-    public AnimationCurve volumeCurve;
-    public AudioSource turbulence;
-    public AnimationCurve turbulenceVolumeCurve;
-
-    float dampVelo;
-    float smoothThrottle = 1;
-
-    void Update()
+    public class PlaneSounds : MonoBehaviour
     {
-        float target = plane.throttle;
+        public Plane plane;
+        public AudioSource jet;
+        public AnimationCurve volumeCurve;
+        public AudioSource turbulence;
+        public AnimationCurve turbulenceVolumeCurve;
 
-        float smoothing = 4;
-        if (target == 0) smoothing = 10;
-        if (plane.isPushback) smoothing = 10;
+        float dampVelo;
+        float smoothThrottle = 1;
 
-        smoothThrottle = Mathf.SmoothDamp(smoothThrottle, target, ref dampVelo, smoothing);
-        jet.pitch = smoothThrottle * 1.5f;
-        jet.volume = volumeCurve.Evaluate(smoothThrottle);
-        turbulence.volume = turbulenceVolumeCurve.Evaluate(smoothThrottle);
+        void Update()
+        {
+            float target = plane.throttle;
+
+            float smoothing = 4;
+            if (target == 0) smoothing = 10;
+            if (plane.isPushback) smoothing = 10;
+
+            smoothThrottle = Mathf.SmoothDamp(smoothThrottle, target, ref dampVelo, smoothing);
+            jet.pitch = smoothThrottle * 1.5f;
+            jet.volume = volumeCurve.Evaluate(smoothThrottle);
+            turbulence.volume = turbulenceVolumeCurve.Evaluate(smoothThrottle);
+        }
     }
 }
