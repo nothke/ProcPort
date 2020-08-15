@@ -102,8 +102,9 @@ public class Plane : MonoBehaviour
 
                 break;
             case State.TaxiingToGate:
+                taxiwayPoints = ATC.e.GetTaxiwayToGate(transform.position, transform.forward, gate);
                 currentTarget = 0;
-                transform.rotation = Random.rotation;
+                //transform.rotation = Random.rotation;
 
                 break;
             case State.AtGate:
@@ -258,8 +259,6 @@ public class Plane : MonoBehaviour
                 // END
                 speed = runwayTaxiSpeed;
 
-                // Find a closest taxiway
-                taxiwayPoints = ATC.e.GetTaxiwayToGate(transform.position, frw, gate);
                 transform.position = new Vector3(transform.position.x, 0, transform.position.z);
                 transform.rotation = runway.transform.rotation;
 
@@ -345,6 +344,7 @@ public class Plane : MonoBehaviour
 
             if (taxiwayPoints == null)
             {
+                // Stop at gate
                 speed -= Time.deltaTime * 0.75f;
                 speed = Mathf.Clamp(speed, 0, runwayTaxiSpeed);
 
