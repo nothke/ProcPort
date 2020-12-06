@@ -71,6 +71,9 @@ namespace Nothke.ProcPort
 
         public ATC atc;
 
+        public bool showDebugGUI;
+
+        /*
         private void Start()
         {
             //ScheduleRandomArrivingFlight(0);
@@ -81,9 +84,9 @@ namespace Nothke.ProcPort
             //ScheduleFlightAtGate(10);
 
             SortFlightsByArrivalTime();
-        }
+        }*/
 
-        void BenchmarkOvercrowded()
+        public void BenchmarkOvercrowded()
         {
             for (int i = 0; i < 30; i++)
             {
@@ -91,7 +94,7 @@ namespace Nothke.ProcPort
             }
         }
 
-        void BenchmarkScheduleMany(int count)
+        public void BenchmarkScheduleMany(int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -99,14 +102,14 @@ namespace Nothke.ProcPort
             }
         }
 
-        void ScheduleRandomArrivingFlight(float inTime)
+        public void ScheduleRandomArrivingFlight(float inTime)
         {
             Flight flight = CreateRandomFlight();
             flight.arrivalTime = Time.time + inTime + Random.Range(5, 20);
             flight.departureTime = Time.time + inTime + Random.Range(500, 700);
         }
 
-        void ScheduleFlightAtGate(float timeToDeparture)
+        public void ScheduleFlightAtGate(float timeToDeparture)
         {
             Flight flight = CreateRandomFlight();
             flight.arrivalTime = 0;
@@ -121,7 +124,7 @@ namespace Nothke.ProcPort
             flight.SetPlane(plane);
         }
 
-        Flight CreateRandomFlight()
+        public Flight CreateRandomFlight()
         {
             Flight flight = new Flight();
             flight.number = GetRandomFlightNumber();
@@ -187,14 +190,15 @@ namespace Nothke.ProcPort
             return "Nowhere City";
         }
 
-        void SortFlightsByArrivalTime()
+        public void SortFlightsByArrivalTime()
         {
             flights = flights.OrderBy(f => f.arrivalTime).ToList();
         }
 
         private void OnGUI()
         {
-            //return;
+            if (!showDebugGUI)
+                return;
 
             if (flights.Count > 0)
                 for (int i = 0; i < flights.Count; i++)
